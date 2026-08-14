@@ -5,14 +5,14 @@
   const siteNav = document.getElementById("siteNav");
   const year = document.getElementById("year");
 
-  const savedTheme = localStorage.getItem("hoper-theme");
+  const savedTheme = localStorage.getItem("zenith01888-theme");
   const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   root.dataset.theme = savedTheme || systemTheme;
 
   if (themeToggle) {
     themeToggle.addEventListener("click", () => {
       root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
-      localStorage.setItem("hoper-theme", root.dataset.theme);
+      localStorage.setItem("zenith01888-theme", root.dataset.theme);
     });
   }
 

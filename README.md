@@ -1,4 +1,4 @@
-# Hoper.github.io 个人主页
+# Zenith01888.github.io 个人主页
 
 一个零依赖、可直接部署到 GitHub Pages 的静态个人主页。使用原生 HTML、CSS 和 JavaScript 构建，本地包含 Lucide 图标与程序化生成的页面素材。
 
@@ -12,9 +12,9 @@ python -m http.server 8080
 
 ## 部署到 GitHub Pages
 
-1. 将仓库改名为 `iamhoper.github.io`，或把站点文件放到 `gh-pages` 分支。
-2. 在 GitHub 仓库的 Settings -> Pages 中，将 Source 设置为 `main` 分支根目录或 `gh-pages` 分支。
-3. 保存后，访问 `https://iamhoper.github.io/`。
+1. 本仓库已经使用 `Zenith01888.github.io` 作为 GitHub Pages 用户主页仓库。
+2. 在 GitHub 仓库的 Settings -> Pages 中，将 Source 设置为 `main` 分支根目录。
+3. 保存后，访问 `https://Zenith01888.github.io/`。
 
 ## 自定义
 
