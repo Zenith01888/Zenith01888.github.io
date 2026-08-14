@@ -101,7 +101,9 @@ div[id] {
   align-items: center;
   justify-content: center;
   color: var(--font-color);
-  background: transparent;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.64)),
+    url("assets/hero.png?v=20260814") center / cover no-repeat;
 }
 
 .site-nav {
