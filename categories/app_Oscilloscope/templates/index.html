@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>示波器上位机</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="brand">
+        <span class="brand-mark" data-icon="activity"></span>
+        <div class="brand-copy">
+            <h1>示波器上位机</h1>
+            <span id="headerIdn">等待连接</span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <span class="status-badge" id="statusBadge">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">未连接</span>
+        </span>
+        <button class="btn ghost icon-btn" id="btnPause" onclick="togglePause()" title="暂停刷新">
+            <span data-icon="pause"></span>
+        </button>
+        <button class="btn ghost" id="btnExport" onclick="exportExcel()">
+            <span data-icon="download"></span>导出
+        </button>
+    </div>
+</header>
+
+<main class="app-main">
+
+    <aside class="panel channel-panel">
+        <div class="panel-head">
+            <span class="panel-title"><span data-icon="sliders-horizontal"></span>通道</span>
+            <span class="panel-meta" id="chCount">4 / 4</span>
+        </div>
+        <div class="channel-list" id="channelList"></div>
+    </aside>
+
+    <section class="workspace">
+        <div class="panel scope-panel">
+            <div class="scope-toolbar">
+                <div class="view-tabs" id="viewTabs">
+                    <button class="view-tab active" data-view="voltage">趋势</button>
+                    <button class="view-tab" data-view="freqamp">频率</button>
+                    <button class="view-tab" data-view="timing">时序</button>
+                    <button class="view-tab" data-view="waveform">波形</button>
+                </div>
+                <div class="scope-actions">
+                    <button class="btn sm ghost" id="btnCapture" onclick="captureWaveform()" title="捕获当前波形">
+                        <span class="spinner"></span>
+                        <span data-icon="camera"></span>
+                        <span id="captureLabel">捕获</span>
+                    </button>
+                    <button class="btn sm ghost" id="btnPersistence" onclick="togglePersistence()" title="余辉叠加">
+                        <span data-icon="layers"></span>余辉
+                    </button>
+                    <button class="btn sm ghost" id="btnUnitToggle" onclick="toggleYUnit()" title="切换 Y 轴单位">
+                        <span data-icon="arrow-up-down"></span>V/A
+                    </button>
+                </div>
+            </div>
+            <div class="scope-screen" id="scopeScreen">
+                <canvas id="chartMain"></canvas>
+                <div class="empty-state" id="chartEmpty">等待采集数据</div>
+            </div>
+            <div class="scope-readout">
+                <span>时基 <b id="readTimebase">--</b></span>
+                <span>触发 <b id="readTrigger">--</b></span>
+                <span>采集 <b id="readAcq">--</b></span>
+                <span>波形 <b id="readWave">--</b></span>
+                <span class="readout-spacer"></span>
+                <span id="readUpdated">--</span>
+            </div>
+        </div>
+    </section>
+
+    <aside class="panel side-panel">
+        <section class="side-section">
+            <div class="panel-head">
+                <span class="panel-title"><span data-icon="plug"></span>连接</span>
+            </div>
+            <div class="field">
+                <label for="selResource">VISA 资源</label>
+                <select id="selResource"><option value="">未扫描</option></select>
+            </div>
+            <div class="field-row">
+                <button class="btn" id="btnScan" onclick="scanResources()">
+                    <span class="spinner"></span>
+                    <span data-icon="search"></span>扫描
+                </button>
+                <button class="btn primary" id="btnConnect" onclick="connectScope()">
+                    <span class="spinner"></span>
+                    <span data-icon="plug"></span>
+                    <span id="btnConnectLabel">连接</span>
+                </button>
+            </div>
+            <div class="info-list">
+                <span>设备<b id="connIdn">--</b></span>
+                <span>厂商<b id="connVendor">--</b></span>
+                <span>地址<b id="connResource">--</b></span>
+            </div>
+        </section>
+
+        <section class="side-section">
+            <div class="panel-head">
+                <span class="panel-title"><span data-icon="sliders-horizontal"></span>采集设置</span>
+            </div>
+            <div class="field">
+                <label for="setTimebase">时基</label>
+                <select id="setTimebase">
+                    <option value="0.0000000005">500 ps/div</option>
+                    <option value="0.000000001">1 ns/div</option>
+                    <option value="0.000000002">2 ns/div</option>
+                    <option value="0.000000005">5 ns/div</option>
+                    <option value="0.00000001">10 ns/div</option>
+                    <option value="0.00000002">20 ns/div</option>
+                    <option value="0.00000005">50 ns/div</option>
+                    <option value="0.0000001">100 ns/div</option>
+                    <option value="0.0000002">200 ns/div</option>
+                    <option value="0.0000005">500 ns/div</option>
+                    <option value="0.000001">1 µs/div</option>
+                    <option value="0.000002">2 µs/div</option>
+                    <option value="0.000005">5 µs/div</option>
+                    <option value="0.00001">10 µs/div</option>
+                    <option value="0.00002">20 µs/div</option>
+                    <option value="0.00005">50 µs/div</option>
+                    <option value="0.0001">100 µs/div</option>
+                    <option value="0.0002">200 µs/div</option>
+                    <option value="0.0005">500 µs/div</option>
+                    <option value="0.001" selected>1 ms/div</option>
+                    <option value="0.002">2 ms/div</option>
+                    <option value="0.005">5 ms/div</option>
+                    <option value="0.01">10 ms/div</option>
+                    <option value="0.02">20 ms/div</option>
+                    <option value="0.05">50 ms/div</option>
+                    <option value="0.1">100 ms/div</option>
+                    <option value="0.2">200 ms/div</option>
+                    <option value="0.5">500 ms/div</option>
+                    <option value="1">1 s/div</option>
+                    <option value="2">2 s/div</option>
+                    <option value="5">5 s/div</option>
+                    <option value="10">10 s/div</option>
+                    <option value="20">20 s/div</option>
+                    <option value="50">50 s/div</option>
+                </select>
+            </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="acqMode">采集模式</label>
+                    <select id="acqMode">
+                        <option value="NORM" selected>Normal</option>
+                        <option value="AVER">Average</option>
+                        <option value="ENV">Envelope</option>
+                        <option value="HRES">High Res</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="acqAvg">平均次数</label>
+                    <select id="acqAvg">
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="8">8</option>
+                        <option value="16" selected>16</option>
+                        <option value="32">32</option>
+                        <option value="64">64</option>
+                        <option value="128">128</option>
+                        <option value="256">256</option>
+                        <option value="512">512</option>
+                        <option value="1024">1024</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="acqDepth">存储深度</label>
+                    <select id="acqDepth">
+                        <option value="1250">1.25 kpts</option>
+                        <option value="12500" selected>12.5 kpts</option>
+                        <option value="62500">62.5 kpts</option>
+                        <option value="125000">125 kpts</option>
+                        <option value="625000">625 kpts</option>
+                        <option value="1250000">1.25 Mpts</option>
+                        <option value="6250000">6.25 Mpts</option>
+                        <option value="12500000">12.5 Mpts</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="acqSampling">采样模式</label>
+                    <select id="acqSampling">
+                        <option value="REAL" selected>Real</option>
+                        <option value="INT">Interpolate</option>
+                        <option value="REP">Repetitive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="trigType">触发类型</label>
+                    <select id="trigType">
+                        <option value="EDGE" selected>Edge</option>
+                        <option value="PULSe">Pulse</option>
+                        <option value="RUNT">Runt</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="trigMode">触发模式</label>
+                    <select id="trigMode">
+                        <option value="AUTO" selected>Auto</option>
+                        <option value="NORM">Normal</option>
+                        <option value="SING">Single</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="trigSrc">触发源</label>
+                    <select id="trigSrc">
+                        <option value="CH1" selected>CH1</option>
+                        <option value="CH2">CH2</option>
+                        <option value="CH3">CH3</option>
+                        <option value="CH4">CH4</option>
+                        <option value="EXT">EXT</option>
+                        <option value="LINE">LINE</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="trigLevel">触发电平 (V)</label>
+                    <input id="trigLevel" type="number" step="any" value="1.0">
+                </div>
+                <div class="field">
+                    <label for="trigCoup">触发耦合</label>
+                    <select id="trigCoup">
+                        <option value="DC" selected>DC</option>
+                        <option value="AC">AC</option>
+                        <option value="HFRej">HF Rej</option>
+                        <option value="LFRej">LF Rej</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="trigSlope">触发斜率</label>
+                    <select id="trigSlope">
+                        <option value="RISE" selected>Rising</option>
+                        <option value="FALL">Falling</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="trigHoldoff">触发抑制 (s)</label>
+                    <input id="trigHoldoff" type="number" step="any" value="0">
+                </div>
+            </div>
+            <div class="field-row">
+                <button class="btn" id="btnRunStop" onclick="toggleRunStop()" title="运行 / 停止采集">
+                    <span class="spinner"></span>
+                    <span data-icon="play"></span>
+                    <span id="btnRunStopLabel">运行</span>
+                </button>
+                <button class="btn primary block" id="btnApply" onclick="applyAllSettings()">
+                    <span class="spinner"></span>
+                    <span data-icon="check"></span>应用设置
+                </button>
+            </div>
+        </section>
+
+        <section class="side-section">
+            <div class="panel-head">
+                <span class="panel-title"><span data-icon="activity"></span>实时统计</span>
+            </div>
+            <div class="stat-list" id="statsPanel"></div>
+        </section>
+    </aside>
+
+    <div class="panel history-panel">
+        <div class="panel-head">
+            <span class="panel-title"><span data-icon="table"></span>历史数据</span>
+            <span class="panel-meta" id="historyCount">0 条</span>
+        </div>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr id="tblHead"></tr></thead>
+                <tbody id="tblBody"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer class="app-statusbar">
+    <span id="footerStatus">未连接</span>
+    <span id="footerHistory">历史 0 条</span>
+    <span>采集间隔 1 s</span>
+    <span class="status-spacer"></span>
+    <span id="footerClock">--</span>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

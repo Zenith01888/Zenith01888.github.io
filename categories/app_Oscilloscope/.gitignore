@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+.obsidian/
+graphify-out/
+*.log
+.venv/

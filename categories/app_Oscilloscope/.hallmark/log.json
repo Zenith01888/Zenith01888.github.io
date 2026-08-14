@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2026-07-25",
+    "macrostructure": "Bento Grid",
+    "theme": "custom",
+    "theme_axes": "light / grotesk-sans / cool-blue",
+    "vibe": "instrument panel — cool white + blue accent",
+    "enrichment": "none",
+    "brief": "oscilloscope web UI — symmetrical bento grid, unified chart+stats+table, light theme"
+  },
+  {
+    "date": "2026-08-05",
+    "macrostructure": "Bento Grid",
+    "theme": "custom",
+    "theme_axes": "light / grotesk-sans / cool-blue",
+    "vibe": "instrument panel — cool white + blue accent",
+    "enrichment": "none",
+    "brief": "YOKOGAWA DLM2024 driver refactor per IM 710105-17E — official MEASure/WAVEFORM/TRIGGER commands, waveform chunking, docs & repo cleanup"
+  }
+]

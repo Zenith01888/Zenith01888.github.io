@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>示波器 Web 上位机</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fa;
+      --card: #fff;
+      --text: #4c4948;
+      --muted: #858585;
+      --accent: #49b1f5;
+      --hover: #ff7242;
+      --border: #eef1f5;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #10151c;
+      --card: #171d26;
+      --text: #c5ccd6;
+      --muted: #8f98a6;
+      --accent: #5aa8e8;
+      --hover: #ff8b66;
+      --border: #2a3442;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.8;
+    }
+    .wrap {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 64px 20px 80px;
+    }
+    .card {
+      padding: 36px 40px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      box-shadow: 0 8px 24px rgba(7, 17, 27, 0.06);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2em;
+      line-height: 1.3;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 24px;
+    }
+    p {
+      margin: 12px 0;
+    }
+    ul {
+      padding-left: 22px;
+      margin: 14px 0 24px;
+    }
+    li {
+      margin: 6px 0;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 20px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 200ms ease, transform 200ms ease;
+    }
+    a:hover {
+      background: var(--hover);
+      transform: translateY(-2px);
+    }
+    a.ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    a.ghost:hover {
+      color: var(--hover);
+      border-color: var(--hover);
+    }
+    .note {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="card">
+      <h1>示波器 Web 上位机</h1>
+      <p class="subtitle">Python + Flask + PyVISA · YOKOGAWA DLM2024 / RIGOL / Keysight</p>
+      <p>这是一个本地运行的示波器采集工具，每秒读取 4 通道共 12 项测量数据，支持实时波形、探头配置、触发设置和 Excel 导出。</p>
+      <ul>
+        <li>厂商自动识别与 SCPI 命令适配</li>
+        <li>电压趋势 / 频率与幅值 / 时序参数 / 实时波形视图</li>
+        <li>通道重命名、历史记录与 Excel 导出</li>
+      </ul>
+      <div class="actions">
+        <a href="https://github.com/Zenith01888/app_Oscilloscope" target="_blank" rel="noreferrer">GitHub 仓库</a>
+        <a class="ghost" href="README.md">查看 README</a>
+      </div>
+      <p class="note">该工具是本地 Flask 应用，需先运行 <code>python app.py</code> 后再通过浏览器使用。</p>
+    </div>
+  </main>
+</body>
+</html>

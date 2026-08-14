@@ -1,0 +1,4 @@
+flask>=3.0
+pyvisa>=1.14
+pyvisa-py>=0.7       # pure-Python VISA backend (no NI-VISA driver needed)
+openpyxl>=3.1        # Excel export

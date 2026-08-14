@@ -543,7 +543,7 @@ body.bw-mode #rightside {
   margin: 0 auto;
   padding: 40px 15px;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .recent-posts {
@@ -553,6 +553,8 @@ body.bw-mode #rightside {
 .aside-content {
   width: 26%;
   padding-left: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
 .page-title-row {
@@ -785,6 +787,7 @@ body.bw-mode #rightside {
 .sticky_layout {
   position: sticky;
   top: 20px;
+  flex: 1;
 }
 
 .card-widget {

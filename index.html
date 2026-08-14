@@ -9,7 +9,7 @@
   <meta property="og:title" content="Zenith01888's Personal Site">
   <meta property="og:description" data-i18n-attr="content:meta.description" content="记录项目、学习与正在做的事。">
   <meta property="og:type" content="website">
-  <title>Zenith01888's Personal Site</title>
+  <title>Zenith's Learning Site</title>
   <link rel="icon" href="img/favicon.jpg" type="image/jpeg">
   <link rel="stylesheet" href="styles.css">
   <script defer src="img/vendor/lucide/lucide.min.js"></script>
@@ -54,6 +54,7 @@
             <div class="nav-dropdown__menu" id="toolsMenu">
               <a href="categories/pdf-merge/" data-i18n="nav.tools.pdfmerge">Pdfmerge</a>
               <a href="categories/pwm_monitor/" data-i18n="nav.tools.pwm">PWM 监控</a>
+              <a href="categories/app_Oscilloscope/" data-i18n="nav.tools.oscilloscope">示波器上位机</a>
             </div>
           </div>
           <a href="#recent-posts">
@@ -154,6 +155,37 @@
 
         <article class="recent-post-item reveal">
           <div class="post_cover">
+            <a href="categories/app_Oscilloscope/" data-i18n-attr="aria-label:project.oscilloscope.aria" aria-label="打开示波器上位机工具">
+              <img src="img/projects/project-oscilloscope.png" data-i18n-attr="alt:project.oscilloscope.cover" alt="示波器上位机项目封面">
+            </a>
+          </div>
+          <div class="recent-post-info">
+            <a class="article-title" href="categories/app_Oscilloscope/" data-i18n="project.oscilloscope.title">示波器上位机</a>
+            <div class="article-meta-wrap">
+              <span class="meta-item"><i data-lucide="calendar"></i><span data-i18n="project.oscilloscope.date">更新于 2026-08-14</span></span>
+              <span class="meta-item"><i data-lucide="folder"></i><span data-i18n="project.oscilloscope.meta">工具 · Python</span></span>
+            </div>
+            <p class="content" data-i18n="project.oscilloscope.desc">基于 Python、Flask 和 PyVISA 的示波器 Web 上位机，支持 YOKOGAWA DLM2024 / RIGOL / Keysight，实时采集 4 通道测量数据并导出 Excel。</p>
+            <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
+              <a href="categories/app_Oscilloscope/">Python</a>
+              <a href="categories/app_Oscilloscope/">Flask</a>
+              <a href="categories/app_Oscilloscope/">PyVISA</a>
+            </div>
+            <div class="recent-post-actions">
+              <a class="read-more read-more--primary" href="categories/app_Oscilloscope/">
+                <span data-i18n="project.view">项目页面</span>
+                <i data-lucide="external-link"></i>
+              </a>
+              <a class="read-more" href="https://github.com/Zenith01888/app_Oscilloscope" target="_blank" rel="noreferrer">
+                <span data-i18n="project.viewRepo">查看仓库</span>
+                <img class="github-icon" src="img/icon/github.svg" alt="" aria-hidden="true">
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <article class="recent-post-item reveal">
+          <div class="post_cover">
             <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer" data-i18n-attr="aria-label:project.portfolio.aria" aria-label="个人主页项目">
               <img src="img/projects/project-portfolio.png" data-i18n-attr="alt:project.portfolio.cover" alt="个人主页项目封面">
             </a>
@@ -213,7 +245,7 @@
             <p class="author-info__description" data-i18n="aside.description">全栈开发者 · 效率工具爱好者</p>
             <div class="card-info-data">
               <a href="#recent-posts">
-                <span class="num">4</span>
+                <span class="num">5</span>
                 <span class="headline" data-i18n="aside.projects">项目</span>
               </a>
               <a href="#about">
@@ -254,6 +286,12 @@
                   <time data-i18n="aside.recent.pwm.date">2026-08-14</time>
                 </div>
               </a>
+              <a class="aside-list-item no-cover" href="categories/app_Oscilloscope/">
+                <div class="content">
+                  <span class="name" data-i18n="aside.recent.oscilloscope">示波器上位机</span>
+                  <time data-i18n="aside.recent.oscilloscope.date">2026-08-14</time>
+                </div>
+              </a>
               <a class="aside-list-item no-cover" href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">
                 <div class="content">
                   <span class="name" data-i18n="aside.recent.portfolio">个人主页</span>
@@ -284,6 +322,12 @@
               <li>
                 <a href="categories/pwm_monitor/">
                   <span class="name" data-i18n="category.serial">Web Serial</span>
+                  <span class="count">1</span>
+                </a>
+              </li>
+              <li>
+                <a href="categories/app_Oscilloscope/">
+                  <span class="name" data-i18n="category.oscilloscope">示波器</span>
                   <span class="count">1</span>
                 </a>
               </li>
@@ -322,8 +366,8 @@
               <span data-i18n="aside.siteInfo">站点信息</span>
             </div>
             <div class="webinfo">
-              <div class="webinfo-item"><span data-i18n="info.projects">项目</span><b>4</b></div>
-              <div class="webinfo-item"><span data-i18n="info.categories">分类</span><b>3</b></div>
+              <div class="webinfo-item"><span data-i18n="info.projects">项目</span><b>5</b></div>
+              <div class="webinfo-item"><span data-i18n="info.categories">分类</span><b>4</b></div>
               <div class="webinfo-item"><span data-i18n="info.tags">标签</span><b>11</b></div>
               <div class="webinfo-item"><span data-i18n="info.built">建站</span><b>2026-08</b></div>
             </div>
