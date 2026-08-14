@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hoper 的个人主页：Web 开发、自动化与效率工具。">
+  <meta property="og:title" content="Hoper | 个人主页">
+  <meta property="og:description" content="把复杂问题变成简单工具，专注 Web 开发、自动化与效率产品。">
+  <meta property="og:type" content="website">
+  <title>Hoper | 个人主页</title>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="assets/vendor/lucide/lucide.min.js"></script>
+  <script defer src="script.js"></script>
+  <noscript>
+    <style>.reveal { opacity: 1; transform: none; }</style>
+  </noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="Hoper 首页">
+        <span class="brand-mark">H</span>
+        <span class="brand-name">Hoper.dev</span>
+      </a>
+      <nav class="site-nav" id="siteNav" aria-label="主导航">
+        <a href="#about">关于</a>
+        <a href="#skills">技能</a>
+        <a href="#projects">项目</a>
+        <a href="#contact">联系</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="切换深浅色主题" title="切换深浅色主题">
+          <i data-lucide="moon" class="icon-moon"></i>
+          <i data-lucide="sun" class="icon-sun"></i>
+        </button>
+        <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="siteNav">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-bg" role="img" aria-label="深色网格与几何图形背景"></div>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="status-dot"></span>
+            欢迎来到我的个人主页
+          </p>
+          <h1>你好，我是 <span class="accent">Hoper</span></h1>
+          <p class="hero-lead">把复杂问题变成简单工具，专注 Web 开发、自动化与效率产品。</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#projects">
+              查看项目
+              <i data-lucide="arrow-down-right"></i>
+            </a>
+            <a class="btn btn-secondary" href="#contact">
+              联系我
+              <i data-lucide="mail"></i>
+            </a>
+          </div>
+          <div class="hero-meta">
+            <span><i data-lucide="map-pin"></i> 上海 / 远程</span>
+            <a href="https://github.com/iamhoper" target="_blank" rel="noreferrer">
+              <i data-lucide="github"></i> github.com/iamhoper
+            </a>
+          </div>
+        </div>
+        <div class="hero-console" aria-hidden="true">
+          <div class="console-window">
+            <div class="console-bar">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="console-title">hoper ~ zsh</span>
+            </div>
+            <pre><code><span class="c-prompt">$</span> whoami
+<span class="c-text">hoper</span>
+<span class="c-prompt">$</span> stack
+<span class="c-text">web · tools · automation</span>
+<span class="c-prompt">$</span> status
+<span class="c-ok">building things that help people</span></code></pre>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#about">
+        <span>向下滚动</span>
+        <i data-lucide="chevron-down"></i>
+      </a>
+    </section>
+
+    <section class="section about" id="about">
+      <div class="section-head reveal">
+        <p class="section-kicker">About</p>
+        <h2>关于我</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>我是一名热爱把想法落地成产品的开发者，喜欢研究如何让复杂流程更简单、更可靠。日常工作中，我关注 Web 应用、自动化脚本和效率工具的打磨，也享受把工具做出来之后被真实使用的过程。</p>
+          <p>这个页面记录我的项目、兴趣和正在做的事。所有内容都保持小而清晰，正如我做工具时的原则。</p>
+        </div>
+        <dl class="about-facts reveal">
+          <div class="fact-row">
+            <dt>方向</dt>
+            <dd>全栈开发与效率工具</dd>
+          </div>
+          <div class="fact-row">
+            <dt>状态</dt>
+            <dd>持续开源与分享</dd>
+          </div>
+          <div class="fact-row">
+            <dt>常驻</dt>
+            <dd>上海 / 远程</dd>
+          </div>
+          <div class="fact-row">
+            <dt>关注</dt>
+            <dd>可用性 · 自动化 · 小工具</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section skills" id="skills">
+      <div class="section-head reveal">
+        <p class="section-kicker">Skills</p>
+        <h2>技能与方向</h2>
+      </div>
+      <div class="skill-list">
+        <article class="skill-row reveal" data-level="92">
+          <div class="skill-icon"><i data-lucide="code-2"></i></div>
+          <div class="skill-copy">
+            <h3>Web 开发</h3>
+            <p>界面、交互与前端工程化，注重性能、可访问性和可维护性。</p>
+          </div>
+          <div class="skill-tags" aria-label="相关技术">
+            <span>TypeScript</span>
+            <span>React</span>
+            <span>Node.js</span>
+            <span>Tailwind CSS</span>
+          </div>
+          <div class="meter" aria-hidden="true"><span></span></div>
+        </article>
+        <article class="skill-row reveal" data-level="88">
+          <div class="skill-icon"><i data-lucide="workflow"></i></div>
+          <div class="skill-copy">
+            <h3>自动化与工具</h3>
+            <p>把重复任务整理成脚本和流水线，减少手工操作带来的不确定性。</p>
+          </div>
+          <div class="skill-tags" aria-label="相关技术">
+            <span>Python</span>
+            <span>Shell</span>
+            <span>GitHub Actions</span>
+            <span>PDF</span>
+          </div>
+          <div class="meter" aria-hidden="true"><span></span></div>
+        </article>
+        <article class="skill-row reveal" data-level="84">
+          <div class="skill-icon"><i data-lucide="panels-top-left"></i></div>
+          <div class="skill-copy">
+            <h3>产品与设计</h3>
+            <p>从问题出发设计界面和流程，让功能足够直观，也足够克制。</p>
+          </div>
+          <div class="skill-tags" aria-label="相关技术">
+            <span>交互设计</span>
+            <span>原型</span>
+            <span>设计系统</span>
+            <span>可访问性</span>
+          </div>
+          <div class="meter" aria-hidden="true"><span></span></div>
+        </article>
+        <article class="skill-row reveal" data-level="86">
+          <div class="skill-icon"><i data-lucide="git-branch"></i></div>
+          <div class="skill-copy">
+            <h3>工程实践</h3>
+            <p>用清晰的提交、测试和文档，让项目可以被持续维护和协作。</p>
+          </div>
+          <div class="skill-tags" aria-label="相关技术">
+            <span>Git</span>
+            <span>CI/CD</span>
+            <span>Testing</span>
+            <span>Docs</span>
+          </div>
+          <div class="meter" aria-hidden="true"><span></span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section projects" id="projects">
+      <div class="section-head reveal">
+        <p class="section-kicker">Projects</p>
+        <h2>项目</h2>
+      </div>
+      <div class="project-grid">
+        <article class="project-card reveal">
+          <div class="project-cover">
+            <img src="assets/projects/project-pdfmerge.png" alt="Pdfmerge 项目封面">
+          </div>
+          <div class="project-body">
+            <p class="project-tag">工具 · 开源</p>
+            <h3>Pdfmerge</h3>
+            <p>一个基于 neumorphism 风格设计的 PDF 合并工具，聚焦干净、快速的文件处理体验。</p>
+            <div class="project-tags">
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/iamhoper/Pdfmerge" target="_blank" rel="noreferrer">
+                GitHub
+                <i data-lucide="github"></i>
+              </a>
+              <a href="https://github.com/iamhoper/Pdfmerge" target="_blank" rel="noreferrer">
+                查看仓库
+                <i data-lucide="external-link"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-cover">
+            <img src="assets/projects/project-portfolio.png" alt="个人主页项目封面">
+          </div>
+          <div class="project-body">
+            <p class="project-tag">站点 · 开源</p>
+            <h3>个人主页</h3>
+            <p>使用原生 HTML、CSS 和 JavaScript 构建的零依赖个人主页，可直接部署到 GitHub Pages。</p>
+            <div class="project-tags">
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>GitHub Pages</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/iamhoper" target="_blank" rel="noreferrer">
+                GitHub
+                <i data-lucide="github"></i>
+              </a>
+              <a href="https://github.com/iamhoper" target="_blank" rel="noreferrer">
+                查看主页
+                <i data-lucide="external-link"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-cover">
+            <img src="assets/projects/project-lab.png" alt="小工具实验室项目封面">
+          </div>
+          <div class="project-body">
+            <p class="project-tag">实验室 · 规划中</p>
+            <h3>小工具实验室</h3>
+            <p>持续把日常问题做成小而可靠的工具，记录灵感、实验和可以复用的代码片段。</p>
+            <div class="project-tags">
+              <span>Ideas</span>
+              <span>Prototype</span>
+              <span>Open Source</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/iamhoper" target="_blank" rel="noreferrer">
+                GitHub
+                <i data-lucide="github"></i>
+              </a>
+              <a href="https://github.com/iamhoper" target="_blank" rel="noreferrer">
+                关注动态
+                <i data-lucide="external-link"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="contact-inner reveal">
+        <div class="contact-copy">
+          <p class="section-kicker">Contact</p>
+          <h2>一起做点有意思的事</h2>
+          <p>无论是合作、交流还是对项目的想法，都欢迎随时联系我。</p>
+          <div class="contact-links">
+            <a class="contact-link" href="mailto:hello@iamhoper.dev">
+              <i data-lucide="mail"></i>
+              <span>hello@iamhoper.dev</span>
+            </a>
+            <a class="contact-link" href="https://github.com/iamhoper" target="_blank" rel="noreferrer">
+              <i data-lucide="github"></i>
+              <span>github.com/iamhoper</span>
+            </a>
+          </div>
+        </div>
+        <div class="contact-status">
+          <p>当前状态</p>
+          <strong>开放合作与开源交流</strong>
+          <span>工作日 10:00 - 18:00 在线，通常会在 24 小时内回复。</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="brand" href="#top" aria-label="回到顶部">
+        <span class="brand-mark">H</span>
+        <span class="brand-name">Hoper.dev</span>
+      </a>
+      <nav class="footer-nav" aria-label="页脚导航">
+        <a href="#about">关于</a>
+        <a href="#skills">技能</a>
+        <a href="#projects">项目</a>
+        <a href="#contact">联系</a>
+      </nav>
+      <p class="copyright">© <span id="year">2026</span> Hoper · 用代码把生活变简单</p>
+    </div>
+  </footer>
+</body>
+</html>
