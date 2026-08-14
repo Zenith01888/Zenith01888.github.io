@@ -389,6 +389,12 @@ div[id] {
   color: var(--theme-hover);
 }
 
+.recent-post-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
 .read-more {
   display: inline-flex;
   align-items: center;
@@ -405,6 +411,18 @@ div[id] {
 .read-more svg {
   width: 14px;
   height: 14px;
+}
+
+.read-more--primary {
+  padding: 7px 16px;
+  border-radius: 4px;
+  background: var(--btn-bg);
+  color: #fff;
+}
+
+.read-more--primary:hover {
+  background: var(--btn-hover);
+  color: #fff;
 }
 
 .sticky_layout {

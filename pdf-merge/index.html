@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f8fafc" />
+    <title>PDF 合并仪表盘</title>
+    <link rel="icon" href="./assets/favicon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="./assets/index-DzxHimfX.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BkBuSoru.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="nav reveal" style="--i: 0">
+        <div class="nav__inner">
+          <a class="nav__brand" href="#" aria-label="PDF 合并工具首页">
+            <span class="nav__mark" aria-hidden="true">pm</span>
+            <span class="nav__name">pdfmerge</span>
+          </a>
+
+          <button id="cmdkTrigger" class="searchpill" type="button">
+            <span class="searchpill__ico" aria-hidden="true"><i data-lucide="command"></i></span>
+            <span class="searchpill__text">打开命令</span>
+            <span class="searchpill__kbd"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+          </button>
+
+          <div class="nav__actions">
+            <button id="pickBtn" class="btn btn--primary" type="button">
+              <i data-lucide="file-up"></i>
+              选择 PDF
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="workbench">
+        <section class="control-rail reveal" style="--i: 1" aria-label="合并控制">
+          <div class="rail-head">
+            <p class="label">WORKBENCH / LOCAL MERGE</p>
+            <h1>把多个 pdf 按顺序合并成一个文件。</h1>
+            <p class="rail-lede">文件只在本机处理。拖入、排序、预览、合并，完成后直接下载。</p>
+          </div>
+
+          <div id="dropzone" class="dropzone" aria-label="上传 PDF 文件">
+            <input id="fileInput" type="file" accept=".pdf,application/pdf" multiple hidden />
+            <div class="drop-copy">
+              <p class="label">INPUT / PDF</p>
+              <strong>拖拽到这里</strong>
+              <span>或使用上方按钮选择</span>
+            </div>
+          </div>
+
+          <label class="field" for="outputName">
+            <span class="label">OUTPUT / FILENAME</span>
+            <div class="name-field">
+              <input id="outputName" type="text" value="merged" spellcheck="false" />
+              <span>.pdf</span>
+            </div>
+          </label>
+
+          <div class="readout-grid">
+            <div class="readout">
+              <span class="label">FILES</span>
+              <strong id="fileCount">0</strong>
+            </div>
+            <div class="readout">
+              <span class="label">PAGES</span>
+              <strong id="pageCount">0</strong>
+            </div>
+            <div class="readout">
+              <span class="label">SIZE</span>
+              <strong id="sizeTotal">0 B</strong>
+            </div>
+            <div class="readout">
+              <span class="label">STATUS</span>
+              <strong id="statusText" class="status-text" data-state="idle">等待文件</strong>
+            </div>
+          </div>
+
+          <button id="mergeBtn" class="btn btn--merge" type="button" disabled>
+            <span>合并 PDF</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
+
+          <div id="progressWrap" class="progress-wrap" hidden>
+            <div class="progress-track">
+              <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <p id="progressText">准备中</p>
+          </div>
+
+          <p id="statusHint" class="status-hint">拖入 PDF 后开始</p>
+        </section>
+
+        <section class="queue-panel reveal" style="--i: 2" aria-label="文件队列">
+          <header class="queue-head">
+            <div class="queue-head__title">
+              <p class="label">FILE QUEUE</p>
+              <h2 id="listSummary">尚未添加文件</h2>
+            </div>
+            <div class="queue-tools">
+              <button id="sortByNameBtn" class="btn btn--ghost" type="button" disabled>
+                按名称排序
+              </button>
+              <button id="clearAllBtn" class="btn btn--ghost danger" type="button" disabled>
+                清空
+              </button>
+            </div>
+          </header>
+
+          <div id="fileList" class="file-list"></div>
+
+          <div id="emptyState" class="empty-state">
+            <div class="empty-mark" aria-hidden="true">+</div>
+            <p><strong>队列还是空的</strong><span>添加 PDF 后，可在这里调整合并顺序</span></p>
+          </div>
+        </section>
+      </main>
+
+      <section class="pipeline reveal" style="--i: 3" aria-label="合并流程">
+        <p class="label">PIPELINE</p>
+        <ol class="pipeline__steps">
+          <li>
+            <span>01</span>
+            <strong>load</strong>
+            <small>选择或拖入 PDF</small>
+          </li>
+          <li>
+            <span>02</span>
+            <strong>order</strong>
+            <small>调整合并顺序</small>
+          </li>
+          <li>
+            <span>03</span>
+            <strong>merge</strong>
+            <small>本地合成并下载</small>
+          </li>
+        </ol>
+        <p class="pipeline__note"><i data-lucide="shield-check"></i>文件不会离开浏览器</p>
+      </section>
+
+      <footer class="foot-line">
+        <p>pdfmerge · 本地处理 · 浏览器内完成</p>
+      </footer>
+    </div>
+
+    <dialog id="cmdk" class="cmdk" aria-labelledby="cmdkTitle">
+      <div class="cmdk__panel">
+        <div class="cmdk__field">
+          <span class="cmdk__field-ico" aria-hidden="true"><i data-lucide="command"></i></span>
+          <input id="cmdkInput" type="text" placeholder="输入命令" autocomplete="off" aria-label="命令搜索" />
+          <span class="cmdk__esc"><kbd>esc</kbd></span>
+        </div>
+        <p id="cmdkTitle" class="visually-hidden">命令面板</p>
+        <div id="cmdkResults" class="cmdk__results"></div>
+        <div class="cmdk__foot">
+          <span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+          <span><kbd>↵</kbd> 执行</span>
+          <span><kbd>esc</kbd> 关闭</span>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="previewModal" class="modal" aria-labelledby="previewTitle">
+      <div class="modal__panel">
+        <header class="modal__head">
+          <div class="modal__title">
+            <p class="label">PREVIEW / PDF</p>
+            <h2 id="previewTitle">PDF 预览</h2>
+            <p id="previewMeta"></p>
+          </div>
+          <button id="previewClose" class="icon-btn" type="button" aria-label="关闭预览" title="关闭">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+        <div id="previewGrid" class="preview-grid"></div>
+        <div id="previewLoading" class="preview-loading" hidden>
+          <i data-lucide="loader-circle" class="spin"></i>
+          <span>正在生成预览</span>
+        </div>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  </body>
+</html>

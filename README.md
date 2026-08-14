@@ -1,6 +1,6 @@
 # Zenith01888.github.io 个人主页
 
-一个零依赖、可直接部署到 GitHub Pages 的静态个人主页。使用原生 HTML、CSS 和 JavaScript 构建，本地包含 Lucide 图标与程序化生成的页面素材。
+一个零依赖、可直接部署到 GitHub Pages 的静态个人主页。使用原生 HTML、CSS 和 JavaScript 构建，本地包含 Lucide 图标与程序化生成的页面素材。PDF 合并工具作为独立页面部署在 `pdf-merge/`，从主页导航或项目卡片即可打开。
 
 ## 本地预览
 
@@ -21,3 +21,4 @@ python -m http.server 8080
 - 个人介绍、技能和项目文字在 `index.html` 中修改。
 - 主题色、字体和布局变量在 `styles.css` 的 `:root` 中修改。
 - 页面素材由 `tools/generate_assets.py` 生成，重新生成前请先安装 Pillow。
+- `pdf-merge/` 是 PDF 合并工具的生产构建产物；更新工具时在 `pdf_merge` 项目根目录运行 `npm run build -- --base=./`，再替换该目录。
