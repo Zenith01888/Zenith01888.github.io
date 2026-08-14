@@ -478,6 +478,7 @@
     if (!searchDialog) return;
     searchDialog.classList.add("open");
     searchDialog.setAttribute("aria-hidden", "false");
+    if (searchButton) searchButton.setAttribute("aria-expanded", "true");
     if (searchInput) {
       searchInput.value = "";
       renderSearchResults("");
@@ -489,6 +490,7 @@
     if (!searchDialog) return;
     searchDialog.classList.remove("open");
     searchDialog.setAttribute("aria-hidden", "true");
+    if (searchButton) searchButton.setAttribute("aria-expanded", "false");
     if (searchResults) searchResults.innerHTML = "";
   }
 
