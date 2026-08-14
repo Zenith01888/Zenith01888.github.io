@@ -253,7 +253,7 @@
   const goUp = document.getElementById("goUp");
   const scrollPercent = document.getElementById("scrollPercent");
   const projectItems = Array.from(document.querySelectorAll("#recent-posts > .recent-post-item"));
-  const pageSize = 3;
+  const pageSize = 5;
   let currentPage = 1;
 
   const getStored = (key) => {
@@ -380,6 +380,13 @@
     if (!pagination) return;
 
     const totalPages = Math.max(1, Math.ceil(projectItems.length / pageSize));
+    if (totalPages <= 1) {
+      pagination.innerHTML = "";
+      pagination.style.display = "none";
+      return;
+    }
+    pagination.style.display = "";
+
     const dict = I18N[currentLang];
     pagination.innerHTML = "";
 

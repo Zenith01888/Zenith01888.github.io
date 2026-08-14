@@ -245,8 +245,7 @@ html[data-theme="dark"] .github-icon {
   height: 20px;
 }
 
-.contact-link .github-icon,
-.about-social .github-icon {
+.contact-link .github-icon {
   width: 17px;
   height: 17px;
   filter: brightness(0) invert(1);
@@ -1053,32 +1052,6 @@ body.bw-mode #rightside {
 
 .about-copy p + p {
   margin-top: 16px;
-}
-
-.about-social {
-  margin-top: 24px;
-}
-
-.about-social a {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  background: var(--btn-bg);
-  color: #fff;
-  font-weight: 700;
-  transition: background 200ms ease, transform 200ms ease;
-}
-
-.about-social a:hover {
-  background: var(--btn-hover);
-  transform: translateY(-2px);
-}
-
-.about-social svg {
-  width: 17px;
-  height: 17px;
 }
 
 .fact-list {
