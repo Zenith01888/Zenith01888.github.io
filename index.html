@@ -71,6 +71,9 @@
             <span data-i18n="nav.contact">联系</span>
           </a>
         </div>
+        <button class="nav-search-trigger" id="searchButton" type="button" data-i18n-attr="aria-label:aside.search title:aside.search" aria-label="搜索项目">
+          <i data-lucide="search"></i>
+        </button>
         <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="navLinks" data-i18n-attr="aria-label:nav.toggle.open">
           <i data-lucide="menu"></i>
         </button>
@@ -418,6 +421,21 @@
       </p>
     </div>
   </footer>
+
+  <div id="local-search" class="search-dialog-wrap" aria-hidden="true">
+    <div class="search-mask" id="searchMask"></div>
+    <div class="search-dialog" role="dialog" aria-modal="true" aria-label="搜索项目" data-i18n-attr="aria-label:aside.search">
+      <div class="search-dialog__head">
+        <i data-lucide="search"></i>
+        <input id="localSearchInput" type="search" autocomplete="off" placeholder="输入关键词搜索项目" data-i18n-attr="aria-label:aside.search, placeholder:aside.search.placeholder" aria-label="搜索项目">
+        <button class="search-dialog__close" id="searchClose" type="button" data-i18n-attr="aria-label:aside.search.close title:aside.search.close" aria-label="关闭搜索">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="search-dialog__results" id="localSearchResults" role="list"></div>
+      <div class="search-empty" id="localSearchEmpty" data-i18n="aside.search.empty" hidden>没有找到相关项目</div>
+    </div>
+  </div>
 
   <div id="rightside" aria-label="右侧工具" data-i18n-attr="aria-label:widgets.rightside">
     <div id="rightside-config-hide" aria-hidden="true">

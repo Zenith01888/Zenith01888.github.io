@@ -78,6 +78,10 @@
       "aside.github": "GitHub",
       "aside.email": "邮箱",
       "aside.about": "关于我",
+      "aside.search": "搜索项目",
+      "aside.search.placeholder": "输入关键词搜索项目",
+      "aside.search.empty": "没有找到相关项目",
+      "aside.search.close": "关闭搜索",
       "aside.recentProjects": "最新项目",
       "aside.recent.pdfmerge": "Pdfmerge",
       "aside.recent.pdfmerge.date": "2026-08-14",
@@ -192,6 +196,10 @@
       "aside.github": "GitHub",
       "aside.email": "Email",
       "aside.about": "About me",
+      "aside.search": "Search Projects",
+      "aside.search.placeholder": "Search projects by keyword",
+      "aside.search.empty": "No matching projects",
+      "aside.search.close": "Close search",
       "aside.recentProjects": "Recent Projects",
       "aside.recent.pdfmerge": "Pdfmerge",
       "aside.recent.pdfmerge.date": "2026-08-14",
@@ -253,6 +261,13 @@
   const goUp = document.getElementById("goUp");
   const scrollPercent = document.getElementById("scrollPercent");
   const projectItems = Array.from(document.querySelectorAll("#recent-posts > .recent-post-item"));
+  const searchButton = document.getElementById("searchButton");
+  const searchDialog = document.getElementById("local-search");
+  const searchMask = document.getElementById("searchMask");
+  const searchInput = document.getElementById("localSearchInput");
+  const searchResults = document.getElementById("localSearchResults");
+  const searchEmpty = document.getElementById("localSearchEmpty");
+  const searchClose = document.getElementById("searchClose");
   const pageSize = 5;
   let currentPage = 1;
 
@@ -334,7 +349,7 @@
     });
 
     document.querySelectorAll("[data-i18n-attr]").forEach((element) => {
-      element.dataset.i18nAttr.split(",").forEach((pair) => {
+      element.dataset.i18nAttr.split(/[,\s]+/).forEach((pair) => {
         const separator = pair.indexOf(":");
         if (separator < 0) return;
         const attr = pair.slice(0, separator).trim();
@@ -423,6 +438,58 @@
     pagination.appendChild(nextButton);
 
     if (window.lucide) window.lucide.createIcons();
+  }
+
+  function renderSearchResults(query) {
+    if (!searchResults) return;
+    searchResults.innerHTML = "";
+
+    const keyword = query.trim().toLowerCase();
+    let matches = 0;
+    projectItems.forEach((item) => {
+      if (keyword && !item.textContent.toLowerCase().includes(keyword)) return;
+
+      const titleElement = item.querySelector(".article-title");
+      const contentElement = item.querySelector(".content");
+      const metaElement = item.querySelector(".article-meta-wrap");
+      const link = document.createElement("a");
+      link.className = "search-result";
+      link.href = titleElement ? titleElement.getAttribute("href") : "#";
+      link.setAttribute("role", "listitem");
+
+      const name = document.createElement("strong");
+      name.textContent = titleElement ? titleElement.textContent.trim() : "";
+      const meta = document.createElement("span");
+      meta.className = "search-result__meta";
+      meta.textContent = metaElement ? metaElement.textContent.replace(/\s+/g, " ").trim() : "";
+      const desc = document.createElement("small");
+      desc.className = "search-result__desc";
+      desc.textContent = contentElement ? contentElement.textContent.trim() : "";
+
+      link.append(name, meta, desc);
+      searchResults.appendChild(link);
+      matches += 1;
+    });
+
+    if (searchEmpty) searchEmpty.hidden = matches > 0;
+  }
+
+  function openSearch() {
+    if (!searchDialog) return;
+    searchDialog.classList.add("open");
+    searchDialog.setAttribute("aria-hidden", "false");
+    if (searchInput) {
+      searchInput.value = "";
+      renderSearchResults("");
+      searchInput.focus();
+    }
+  }
+
+  function closeSearch() {
+    if (!searchDialog) return;
+    searchDialog.classList.remove("open");
+    searchDialog.setAttribute("aria-hidden", "true");
+    if (searchResults) searchResults.innerHTML = "";
   }
 
   let initialTheme = getStored(THEME_KEY);
@@ -528,6 +595,28 @@
   if (bwToggle) {
     bwToggle.addEventListener("click", () => {
       applyBw(!document.body.classList.contains("bw-mode"));
+    });
+  }
+
+  if (searchButton) {
+    searchButton.addEventListener("click", openSearch);
+  }
+
+  if (searchClose) {
+    searchClose.addEventListener("click", closeSearch);
+  }
+
+  if (searchMask) {
+    searchMask.addEventListener("click", closeSearch);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => renderSearchResults(searchInput.value));
+  }
+
+  if (searchResults) {
+    searchResults.addEventListener("click", (event) => {
+      if (event.target.closest("a")) closeSearch();
     });
   }
 
