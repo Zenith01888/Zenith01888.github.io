@@ -1,6 +1,6 @@
 # Zenith01888.github.io 个人主页
 
-一个零依赖、可直接部署到 GitHub Pages 的静态个人主页。使用原生 HTML、CSS 和 JavaScript 构建，本地包含 Lucide 图标与程序化生成的页面素材。PDF 合并工具作为独立页面部署在 `pdf-merge/`，从主页导航或项目卡片即可打开。
+一个零依赖、可直接部署到 GitHub Pages 的静态个人主页。使用原生 HTML、CSS 和 JavaScript 构建，本地包含 Lucide 图标与程序化生成的页面素材。PDF 合并工具部署在 `pdf-merge/`，PWM 监控工具部署在 `pwm_monitor/`，都可以从主页“工具”下拉菜单或项目卡片打开。
 
 ## 本地预览
 
@@ -22,3 +22,4 @@ python -m http.server 8080
 - 主题色、字体和布局变量在 `styles.css` 的 `:root` 中修改。
 - 页面素材由 `tools/generate_assets.py` 生成，重新生成前请先安装 Pillow。
 - `pdf-merge/` 是 PDF 合并工具的生产构建产物；更新工具时在 `pdf_merge` 项目根目录运行 `npm run build -- --base=./`，再替换该目录。
+- `pwm_monitor/` 是 PWM 监控工具页面，包含 Web Serial 串口读取、三通道频率与占空比统计、Excel 导出和自动保存。

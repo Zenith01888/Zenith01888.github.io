@@ -30,7 +30,16 @@
           <i data-lucide="menu"></i>
         </button>
         <div class="nav-links" id="navLinks">
-          <a href="pdf-merge/">工具</a>
+          <div class="nav-dropdown" id="toolsDropdown">
+            <button class="nav-dropdown__trigger" id="toolsMenuToggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="toolsMenu">
+              工具
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="nav-dropdown__menu" id="toolsMenu">
+              <a href="pdf-merge/">Pdfmerge</a>
+              <a href="pwm_monitor/">PWM 监控</a>
+            </div>
+          </div>
           <a href="#recent-posts">项目</a>
           <a href="#about">关于</a>
           <a href="#contact">联系</a>
@@ -87,6 +96,31 @@
                 <i data-lucide="github"></i>
               </a>
             </div>
+          </div>
+        </article>
+
+        <article class="recent-post-item reveal">
+          <div class="post_cover">
+            <a href="pwm_monitor/" aria-label="打开 PWM Monitor 工具">
+              <img src="assets/projects/project-pwm.png" alt="PWM Monitor 项目封面">
+            </a>
+          </div>
+          <div class="recent-post-info">
+            <a class="article-title" href="pwm_monitor/">PWM Monitor</a>
+            <div class="article-meta-wrap">
+              <span class="meta-item"><i data-lucide="calendar"></i>更新于 2026-08-14</span>
+              <span class="meta-item"><i data-lucide="folder"></i>工具 · Web Serial</span>
+            </div>
+            <p class="content">通过 Web Serial 连接开发板，实时捕获并监控多路 PWM 频率与占空比，支持通道开关、统计和导出 Excel。</p>
+            <div class="tags" aria-label="项目标签">
+              <a href="pwm_monitor/">HTML</a>
+              <a href="pwm_monitor/">CSS</a>
+              <a href="pwm_monitor/">Web Serial</a>
+            </div>
+            <a class="read-more read-more--primary" href="pwm_monitor/">
+              在线使用
+              <i data-lucide="external-link"></i>
+            </a>
           </div>
         </article>
 
@@ -149,7 +183,7 @@
             <p class="author-info__description">全栈开发者 · 效率工具爱好者</p>
             <div class="card-info-data">
               <a href="#recent-posts">
-                <span class="num">3</span>
+                <span class="num">4</span>
                 <span class="headline">项目</span>
               </a>
               <a href="#about">
@@ -182,6 +216,7 @@
               <a href="#skills">TypeScript</a>
               <a href="#skills">Python</a>
               <a href="#skills">Automation</a>
+              <a href="#skills">Web Serial</a>
               <a href="#skills">PDF</a>
               <a href="#skills">GitHub Actions</a>
               <a href="#skills">GitHub Pages</a>
@@ -197,9 +232,9 @@
               <span>站点信息</span>
             </div>
             <div class="webinfo">
-              <div class="webinfo-item"><span>项目</span><b>3</b></div>
+              <div class="webinfo-item"><span>项目</span><b>4</b></div>
               <div class="webinfo-item"><span>分类</span><b>3</b></div>
-              <div class="webinfo-item"><span>标签</span><b>10</b></div>
+              <div class="webinfo-item"><span>标签</span><b>11</b></div>
               <div class="webinfo-item"><span>建站</span><b>2026-08</b></div>
             </div>
           </div>

@@ -1,0 +1,166 @@
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V5
+ * macrostructure: Bento Grid · genre: modern-minimal · theme: custom-light
+ * redesign: yes · paper: oklch(97% 0.004 260) ~#f2f2f7 · accent: oklch(54% 0.23 260) ~#007aff
+ * display: Space Grotesk 500 · body: IBM Plex Sans 400 · outlier: JetBrains Mono 400
+ * enrichment: none · motion: number-tick · hover-lift
+ * axes: light / geometric-sans / cool
+ * contrast: pass (40–41) · tokens: pass (48) · responsive: pass (34, 49–57)
+ * nav: N/A (dashboard) · footer: N/A (status bar) · honest: pass (46) · chrome: pass (47)
+ */
+
+:root {
+  /* —— Palette (Apple iOS light, cool-blue anchor at hue 260) —— */
+  --color-paper:       oklch(97% 0.004 260);   /* #f2f2f7  iOS system background */
+  --color-paper-2:     oklch(100% 0 none);      /* #ffffff  card surfaces          */
+  --color-paper-3:     oklch(93% 0.006 260);   /*          elevated / input fill   */
+  --color-rule:        oklch(88% 0.004 260);   /*          iOS separator           */
+  --color-rule-2:      oklch(80% 0.005 260);   /*          stronger border         */
+  --color-ink:         oklch(16% 0.004 260);   /*          primary text            */
+  --color-ink-2:       oklch(44% 0.006 260);   /*          iOS secondary label     */
+  --color-muted:       oklch(60% 0.005 260);   /*          tertiary / placeholder  */
+  --color-accent:      oklch(54% 0.23 260);    /* #007aff  iOS blue                */
+  --color-accent-ink:  oklch(100% 0 none);      /*          white on blue           */
+  --color-focus:       oklch(54% 0.23 260);    /*          matches accent (iOS)    */
+
+  /* —— Channel colours —— */
+  --color-ch1:         oklch(62% 0.18 70);     /* #ff9500  iOS orange              */
+  --color-ch2:         oklch(54% 0.23 260);    /* #007aff  iOS blue (ch2=accent)   */
+  --color-ch3:         oklch(58% 0.21 150);    /* #34c759  iOS green               */
+
+  /* —— Semantic —— */
+  --color-success:     oklch(58% 0.21 150);    /* #34c759  iOS green               */
+  --color-success-ink: oklch(100% 0 none);
+  --color-warning:     oklch(80% 0.17 98);     /* #ffcc00  iOS yellow              */
+  --color-warning-ink: oklch(20% 0.02 90);
+  --color-error:       oklch(52% 0.22 25);     /*          iOS red                 */
+  --color-error-ink:   oklch(100% 0 none);
+
+  /* —— Surface elevation & interaction —— */
+  --color-paper-hover:       oklch(95% 0.005 260);
+  --color-row-hover:         oklch(94% 0.005 260);
+  --color-badge-ok-bg:       oklch(90% 0.06 150);
+  --color-badge-warn-bg:     oklch(92% 0.08 98);
+  --color-badge-idle-bg:     oklch(90% 0.004 260);
+  --color-btn-accent:        oklch(90% 0.02 260);
+  --color-btn-accent-hover:  oklch(85% 0.03 260);
+  --color-btn-primary-ink:   oklch(100% 0 none);
+  --shadow-card:             0 1px 3px oklch(0% 0 none / 0.06),
+                             0 1px 2px oklch(0% 0 none / 0.04);
+  --shadow-card-hover:       0 2px 8px oklch(0% 0 none / 0.08),
+                             0 1px 3px oklch(0% 0 none / 0.06);
+  --shadow-header:           0 1px 0 oklch(0% 0 none / 0.06);
+  --glass-header-bg:         oklch(97% 0.004 260 / 0.72);
+  --glass-header-border:     oklch(0% 0 none / 0.08);
+
+  /* —— Typography —— */
+  --font-display:  'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body:     'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:     'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* —— Type scale (major third, 1.25) —— */
+  --text-xs:    0.6875rem;  /* 11px */
+  --text-sm:    0.8125rem;  /* 13px */
+  --text-base:  1rem;       /* 16px */
+  --text-md:    1.25rem;    /* 20px */
+  --text-lg:    1.5625rem;  /* 25px */
+  --text-xl:    1.9531rem;  /* 31px */
+  --text-2xl:   2.4414rem;  /* 39px */
+  --text-3xl:   3.0518rem;  /* 49px */
+
+  /* —— Spacing (8pt grid) —— */
+  --space-3xs:  0.25rem;    /*   4px */
+  --space-2xs:  0.5rem;     /*   8px */
+  --space-xs:   0.75rem;    /*  12px */
+  --space-sm:   1rem;       /*  16px */
+  --space-md:   1.5rem;     /*  24px */
+  --space-lg:   2rem;       /*  32px */
+  --space-xl:   2.5rem;     /*  40px */
+  --space-2xl:  3.5rem;     /*  56px */
+
+  /* —— Easings —— */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* —— Durations —— */
+  --dur-micro:   120ms;
+  --dur-short:   220ms;
+  --dur-long:    420ms;
+
+  /* —— Radii (Apple 20px system) —— */
+  --radius-sm:   12px;
+  --radius-md:   20px;
+  --radius-pill: 999px;
+
+  /* —— Z-index —— */
+  --z-base:      1;
+  --z-raised:    10;
+  --z-sticky:    100;
+  --z-overlay:   400;
+}
+
+/* --- Dark Mode (system preference) --- */
+@media (prefers-color-scheme: dark) {
+:root {
+  --color-paper:       oklch(14% 0.006 260);
+  --color-paper-2:     oklch(20% 0.008 260);
+  --color-paper-3:     oklch(26% 0.01 260);
+  --color-rule:        oklch(30% 0.01 260);
+  --color-rule-2:      oklch(38% 0.012 260);
+  --color-ink:         oklch(90% 0.004 260);
+  --color-ink-2:       oklch(64% 0.006 260);
+  --color-muted:       oklch(48% 0.005 260);
+  --color-accent:      oklch(60% 0.22 260);
+  --color-accent-ink:  oklch(100% 0 none);
+  --color-focus:       oklch(60% 0.22 260);
+  --color-ch1:         oklch(68% 0.18 70);
+  --color-ch2:         oklch(60% 0.22 260);
+  --color-ch3:         oklch(64% 0.21 150);
+  --color-success:     oklch(64% 0.21 150);
+  --color-warning:     oklch(84% 0.17 98);
+  --color-error:       oklch(58% 0.22 25);
+  --color-paper-hover:       oklch(24% 0.008 260);
+  --color-row-hover:         oklch(23% 0.008 260);
+  --color-badge-ok-bg:       oklch(24% 0.06 150);
+  --color-badge-warn-bg:     oklch(28% 0.08 98);
+  --color-badge-idle-bg:     oklch(22% 0.006 260);
+  --color-btn-accent:        oklch(30% 0.015 260);
+  --color-btn-accent-hover:  oklch(35% 0.02 260);
+  --shadow-card:             0 1px 3px oklch(0% 0 none / 0.24), 0 1px 2px oklch(0% 0 none / 0.16);
+  --shadow-card-hover:       0 2px 8px oklch(0% 0 none / 0.32), 0 1px 3px oklch(0% 0 none / 0.24);
+  --glass-header-bg:         oklch(14% 0.006 260 / 0.78);
+  --glass-header-border:     oklch(100% 0 none / 0.10);
+}
+}
+
+/* --- Manual dark mode toggle via html.dark --- */
+html.dark {
+  --color-paper:       oklch(14% 0.006 260);
+  --color-paper-2:     oklch(20% 0.008 260);
+  --color-paper-3:     oklch(26% 0.01 260);
+  --color-rule:        oklch(30% 0.01 260);
+  --color-rule-2:      oklch(38% 0.012 260);
+  --color-ink:         oklch(90% 0.004 260);
+  --color-ink-2:       oklch(64% 0.006 260);
+  --color-muted:       oklch(48% 0.005 260);
+  --color-accent:      oklch(60% 0.22 260);
+  --color-accent-ink:  oklch(100% 0 none);
+  --color-focus:       oklch(60% 0.22 260);
+  --color-ch1:         oklch(68% 0.18 70);
+  --color-ch2:         oklch(60% 0.22 260);
+  --color-ch3:         oklch(64% 0.21 150);
+  --color-success:     oklch(64% 0.21 150);
+  --color-warning:     oklch(84% 0.17 98);
+  --color-error:       oklch(58% 0.22 25);
+  --color-paper-hover:       oklch(24% 0.008 260);
+  --color-row-hover:         oklch(23% 0.008 260);
+  --color-badge-ok-bg:       oklch(24% 0.06 150);
+  --color-badge-warn-bg:     oklch(28% 0.08 98);
+  --color-badge-idle-bg:     oklch(22% 0.006 260);
+  --color-btn-accent:        oklch(30% 0.015 260);
+  --color-btn-accent-hover:  oklch(35% 0.02 260);
+  --shadow-card:             0 1px 3px oklch(0% 0 none / 0.24), 0 1px 2px oklch(0% 0 none / 0.16);
+  --shadow-card-hover:       0 2px 8px oklch(0% 0 none / 0.32), 0 1px 3px oklch(0% 0 none / 0.24);
+  --glass-header-bg:         oklch(14% 0.006 260 / 0.78);
+  --glass-header-border:     oklch(100% 0 none / 0.10);
+}

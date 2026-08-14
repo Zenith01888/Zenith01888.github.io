@@ -2,6 +2,8 @@
   const nav = document.getElementById("siteNav");
   const navToggle = document.getElementById("navToggle");
   const navLinks = document.getElementById("navLinks");
+  const toolsMenuToggle = document.getElementById("toolsMenuToggle");
+  const toolsDropdown = document.getElementById("toolsDropdown");
   const year = document.getElementById("year");
 
   const onScroll = () => {
@@ -11,11 +13,18 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  const closeToolsMenu = () => {
+    if (!toolsDropdown) return;
+    toolsDropdown.classList.remove("open");
+    toolsMenuToggle.setAttribute("aria-expanded", "false");
+  };
+
   if (navToggle && navLinks) {
     navToggle.addEventListener("click", () => {
       const isOpen = navLinks.classList.toggle("open");
       navToggle.setAttribute("aria-expanded", String(isOpen));
       navToggle.setAttribute("aria-label", isOpen ? "关闭菜单" : "打开菜单");
+      closeToolsMenu();
     });
 
     navLinks.querySelectorAll("a").forEach((link) => {
@@ -23,7 +32,28 @@
         navLinks.classList.remove("open");
         navToggle.setAttribute("aria-expanded", "false");
         navToggle.setAttribute("aria-label", "打开菜单");
+        closeToolsMenu();
       });
+    });
+  }
+
+  if (toolsMenuToggle && toolsDropdown) {
+    toolsMenuToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const isOpen = toolsDropdown.classList.toggle("open");
+      toolsMenuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!toolsDropdown.contains(event.target)) {
+        closeToolsMenu();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeToolsMenu();
+      }
     });
   }
 

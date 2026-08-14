@@ -110,6 +110,46 @@ def draw_pdf_cover(draw, width, height):
         draw.rectangle((x1 + 28, y1 + 94, x1 + width * 0.17, y1 + 104), fill=alpha(CREAM, 90))
 
 
+def draw_pwm_cover(draw, width, height):
+    left, top, right, bottom = width * 0.1, height * 0.14, width * 0.9, height * 0.86
+    draw.rounded_rectangle(
+        (left, top, right, bottom),
+        radius=24,
+        fill=alpha(CREAM, 18),
+        outline=alpha(CREAM, 60),
+        width=2,
+    )
+
+    traces = [
+        (height * 0.35, width * 0.1, 0.5, CORAL),
+        (height * 0.58, width * 0.15, 0.3, TEAL),
+        (height * 0.81, width * 0.075, 0.7, AMBER),
+    ]
+    for y, period, duty, color in traces:
+        amp = height * 0.035
+        x = left + width * 0.025
+        while x < right - width * 0.025:
+            high = x + period * duty
+            low = x + period
+            draw.line((x, y - amp, high, y - amp), fill=alpha(color, 230), width=4)
+            draw.line((high, y - amp, high, y + amp), fill=alpha(color, 230), width=4)
+            draw.line((high, y + amp, low, y + amp), fill=alpha(color, 230), width=4)
+            draw.line((low, y + amp, low, y - amp), fill=alpha(color, 230), width=4)
+            x = low
+
+    labels = [
+        (left + width * 0.045, height * 0.235, CORAL),
+        (left + width * 0.045, height * 0.465, TEAL),
+        (left + width * 0.045, height * 0.695, AMBER),
+    ]
+    for x, y, color in labels:
+        draw.rounded_rectangle(
+            (x, y - 24, x + width * 0.13, y + 8),
+            radius=8,
+            fill=alpha(color, 220),
+        )
+
+
 def draw_portfolio_cover(draw, width, height):
     left = width * 0.28
     top = height * 0.2
@@ -174,6 +214,7 @@ def make_favicon():
 if __name__ == "__main__":
     make_hero()
     make_project_cover("project-pdfmerge.png", draw_pdf_cover)
+    make_project_cover("project-pwm.png", draw_pwm_cover)
     make_project_cover("project-portfolio.png", draw_portfolio_cover)
     make_project_cover("project-lab.png", draw_lab_cover)
     make_favicon()
