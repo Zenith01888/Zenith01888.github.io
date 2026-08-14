@@ -22,6 +22,7 @@
   --hero-overlay-a: rgba(255, 255, 255, 0.72);
   --hero-overlay-b: rgba(255, 255, 255, 0.64);
   --footer-bg: var(--theme);
+  --footer-bg-end: #2e7fb8;
   --footer-text: #eef6ff;
 }
 
@@ -50,6 +51,7 @@ html[data-theme="dark"] {
   --hero-overlay-a: rgba(13, 18, 24, 0.72);
   --hero-overlay-b: rgba(13, 18, 24, 0.66);
   --footer-bg: #172433;
+  --footer-bg-end: #10151c;
   --footer-text: #dce7f2;
 }
 
@@ -1267,7 +1269,7 @@ body.bw-mode #rightside {
 }
 
 .site-footer {
-  background: var(--footer-bg);
+  background: linear-gradient(135deg, var(--footer-bg) 0%, var(--footer-bg-end) 100%);
   color: var(--footer-text);
   text-align: center;
 }
@@ -1286,7 +1288,7 @@ body.bw-mode #rightside {
 }
 
 .footer-links a {
-  color: #fff;
+  color: inherit;
 }
 
 .footer-links a:hover {
