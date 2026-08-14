@@ -4,8 +4,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSETS = ROOT / "assets"
-PROJECTS = ASSETS / "projects"
+IMG = ROOT / "img"
+PROJECTS = IMG / "projects"
 
 BG = (15, 18, 23, 255)
 PANEL = (22, 27, 34, 255)
@@ -30,60 +30,6 @@ def save_supersampled(image, path, scale=2):
     image = image.resize((image.width // scale, image.height // scale), Image.LANCZOS)
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path, optimize=True)
-
-
-def make_hero():
-    size = (1920, 1080)
-    canvas = Image.new("RGBA", (size[0] * 2, size[1] * 2), BG)
-    draw = ImageDraw.Draw(canvas)
-
-    draw_grid(draw, canvas.width, canvas.height, 96, alpha(CREAM, 12))
-    draw_grid(draw, canvas.width, canvas.height, 24, alpha(CREAM, 5))
-
-    draw.rectangle((0, 0, canvas.width, 10), fill=alpha(CORAL, 255))
-    draw.polygon(
-        [(canvas.width * 0.74, canvas.height), (canvas.width, canvas.height * 0.52), (canvas.width, canvas.height)],
-        fill=alpha(TEAL, 26),
-    )
-    draw.polygon(
-        [(canvas.width * 0.82, 0), (canvas.width, 0), (canvas.width, canvas.height * 0.36)],
-        fill=alpha(CORAL, 34),
-    )
-
-    for y in (0.26, 0.5, 0.74):
-        draw.line(
-            (0, canvas.height * y, canvas.width, canvas.height * y),
-            fill=alpha(AMBER, 22),
-            width=3,
-        )
-
-    left = canvas.width * 0.03
-    for index, y in enumerate((0.22, 0.36, 0.5, 0.64, 0.78)):
-        width = canvas.width * (0.24 - index * 0.012)
-        draw.rounded_rectangle(
-            (left, canvas.height * y, left + width, canvas.height * y + 10),
-            radius=5,
-            fill=alpha(CORAL if index % 2 == 0 else TEAL, 46),
-        )
-
-    draw.line(
-        (canvas.width * 0.08, canvas.height * 0.12, canvas.width * 0.08, canvas.height * 0.88),
-        fill=alpha(CREAM, 48),
-        width=4,
-    )
-    draw.line(
-        (canvas.width * 0.085, canvas.height * 0.12, canvas.width * 0.085, canvas.height * 0.88),
-        fill=alpha(AMBER, 80),
-        width=2,
-    )
-
-    for x, y in zip((0.11, 0.17, 0.14), (0.16, 0.32, 0.52)):
-        draw.rectangle(
-            (canvas.width * x, canvas.height * y, canvas.width * x + 18, canvas.height * y + 18),
-            fill=alpha(TEAL if y < 0.4 else AMBER, 110),
-        )
-
-    save_supersampled(canvas, ASSETS / "hero.png")
 
 
 def make_project_cover(name, drawing):
@@ -208,11 +154,10 @@ def make_favicon():
         (left + bar_w - 8, size * 0.43, right - bar_w + 8, size * 0.43 + cross_h),
         fill=CREAM,
     )
-    save_supersampled(canvas, ASSETS / "favicon.png")
+    save_supersampled(canvas, IMG / "favicon.png")
 
 
 if __name__ == "__main__":
-    make_hero()
     make_project_cover("project-pdfmerge.png", draw_pdf_cover)
     make_project_cover("project-pwm.png", draw_pwm_cover)
     make_project_cover("project-portfolio.png", draw_portfolio_cover)

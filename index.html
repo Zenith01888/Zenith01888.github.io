@@ -1,99 +1,127 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Zenith 的个人主页：项目、学习记录与正在做的事。">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" id="themeColor" content="#ffffff">
+  <meta name="description" data-i18n-attr="content:meta.description" content="Zenith 的个人主页：项目、学习记录与正在做的事。">
   <meta property="og:title" content="Zenith01888's Personal Site">
-  <meta property="og:description" content="记录项目、学习与正在做的事。">
+  <meta property="og:description" data-i18n-attr="content:meta.description" content="记录项目、学习与正在做的事。">
   <meta property="og:type" content="website">
   <title>Zenith01888's Personal Site</title>
-  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="icon" href="img/favicon.jpg" type="image/jpeg">
   <link rel="stylesheet" href="styles.css">
-  <script defer src="assets/vendor/lucide/lucide.min.js"></script>
+  <script defer src="img/vendor/lucide/lucide.min.js"></script>
   <script defer src="script.js"></script>
+  <script>
+    (function () {
+      try {
+        var lang = localStorage.getItem("zenith-lang");
+        if (lang === "en") document.documentElement.lang = "en";
+        var theme = localStorage.getItem("zenith-theme");
+        if (!theme) {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (error) {
+        // Inline state is restored again by script.js; no action needed here.
+      }
+    })();
+  </script>
   <noscript>
     <style>.reveal { opacity: 1; transform: none; }</style>
   </noscript>
 </head>
 <body>
-  <a class="skip-link" href="#main">跳到主要内容</a>
+  <a class="skip-link" href="#main" data-i18n="skip">跳到主要内容</a>
 
   <header class="page-header" id="top">
-    <nav class="site-nav" id="siteNav" aria-label="主导航">
+    <nav class="site-nav" id="siteNav" aria-label="主导航" data-i18n-attr="aria-label:nav.aria">
       <div class="nav-inner">
         <a class="site-name" href="#top">
-          <img class="site-icon" src="assets/favicon.png" alt="">
           <span>Zenith01888</span>
         </a>
-        <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="navLinks">
-          <i data-lucide="menu"></i>
-        </button>
         <div class="nav-links" id="navLinks">
           <div class="nav-dropdown" id="toolsDropdown">
             <button class="nav-dropdown__trigger" id="toolsMenuToggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="toolsMenu">
-              工具
+              <span class="nav-dropdown__label">
+                <img class="nav-icon" src="img/icon/tools.png" alt="" aria-hidden="true">
+                <span data-i18n="nav.tools">工具</span>
+              </span>
               <i data-lucide="chevron-down"></i>
             </button>
             <div class="nav-dropdown__menu" id="toolsMenu">
-              <a href="pdf-merge/">Pdfmerge</a>
-              <a href="pwm_monitor/">PWM 监控</a>
+              <a href="categories/pdf-merge/" data-i18n="nav.tools.pdfmerge">Pdfmerge</a>
+              <a href="categories/pwm_monitor/" data-i18n="nav.tools.pwm">PWM 监控</a>
             </div>
           </div>
-          <a href="#recent-posts">项目</a>
-          <a href="#about">关于</a>
-          <a href="#contact">联系</a>
+          <a href="#recent-posts">
+            <img class="nav-icon" src="img/icon/projects.png" alt="" aria-hidden="true">
+            <span data-i18n="nav.projects">项目</span>
+          </a>
+          <a href="#about">
+            <img class="nav-icon" src="img/icon/about.png" alt="" aria-hidden="true">
+            <span data-i18n="nav.about">关于</span>
+          </a>
+          <a href="#contact">
+            <img class="nav-icon" src="img/icon/contact.png" alt="" aria-hidden="true">
+            <span data-i18n="nav.contact">联系</span>
+          </a>
         </div>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="navLinks" data-i18n-attr="aria-label:nav.toggle.open">
+          <i data-lucide="menu"></i>
+        </button>
       </div>
     </nav>
 
     <div class="site-info">
       <h1 class="site-title">Zenith01888's Personal Site</h1>
-      <p class="site-subtitle">记录项目、学习与正在做的事</p>
+      <p class="site-subtitle" data-i18n="hero.subtitle">记录项目、学习与正在做的事</p>
     </div>
 
-    <a class="scroll-down" href="#recent-posts" aria-label="向下滚动">
+    <a class="scroll-down" href="#recent-posts" aria-label="向下滚动" data-i18n-attr="aria-label:hero.scroll">
       <i data-lucide="chevron-down"></i>
     </a>
   </header>
 
   <main id="main">
     <div class="layout">
-      <section class="recent-posts" id="recent-posts" aria-label="最近项目">
+      <section class="recent-posts" id="recent-posts" aria-label="最近项目" data-i18n-attr="aria-label:recent.aria">
         <div class="page-title-row reveal">
-          <h2 class="page-title">最近项目</h2>
+          <h2 class="page-title" data-i18n="recent.title">最近项目</h2>
           <a class="more-link" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">
-            查看全部
+            <span data-i18n="recent.viewAll">查看全部</span>
             <i data-lucide="arrow-right"></i>
           </a>
         </div>
 
         <article class="recent-post-item reveal">
           <div class="post_cover">
-            <a href="pdf-merge/" aria-label="打开 Pdfmerge 工具">
-              <img src="assets/projects/project-pdfmerge.png" alt="Pdfmerge 项目封面">
+            <a href="categories/pdf-merge/" data-i18n-attr="aria-label:project.pdfmerge.aria" aria-label="打开 Pdfmerge 工具">
+              <img src="img/projects/project-pdfmerge.png" data-i18n-attr="alt:project.pdfmerge.cover" alt="Pdfmerge 项目封面">
             </a>
           </div>
           <div class="recent-post-info">
-            <a class="article-title" href="pdf-merge/">Pdfmerge</a>
+            <a class="article-title" href="categories/pdf-merge/" data-i18n="project.pdfmerge.title">Pdfmerge</a>
             <div class="article-meta-wrap">
-              <span class="meta-item"><i data-lucide="calendar"></i>更新于 2026-08-14</span>
-              <span class="meta-item"><i data-lucide="folder"></i>工具 · 开源</span>
+              <span class="meta-item"><i data-lucide="calendar"></i><span data-i18n="project.pdfmerge.date">更新于 2026-08-14</span></span>
+              <span class="meta-item"><i data-lucide="folder"></i><span data-i18n="project.pdfmerge.meta">工具 · 开源</span></span>
             </div>
-            <p class="content">一个完全在浏览器本地运行的 PDF 合并工具：拖入多个 PDF，调整合并顺序，点击合并后直接下载，文件不会上传到任何服务器。</p>
-            <div class="tags" aria-label="项目标签">
-              <a href="pdf-merge/">HTML</a>
-              <a href="pdf-merge/">CSS</a>
-              <a href="pdf-merge/">JavaScript</a>
+            <p class="content" data-i18n="project.pdfmerge.desc">一个完全在浏览器本地运行的 PDF 合并工具：拖入多个 PDF，调整合并顺序，点击合并后直接下载，文件不会上传到任何服务器。</p>
+            <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
+              <a href="categories/pdf-merge/">HTML</a>
+              <a href="categories/pdf-merge/">CSS</a>
+              <a href="categories/pdf-merge/">JavaScript</a>
             </div>
             <div class="recent-post-actions">
-              <a class="read-more read-more--primary" href="pdf-merge/">
-                在线使用
+              <a class="read-more read-more--primary" href="categories/pdf-merge/">
+                <span data-i18n="project.use">在线使用</span>
                 <i data-lucide="external-link"></i>
               </a>
               <a class="read-more" href="https://github.com/Zenith01888/Pdfmerge" target="_blank" rel="noreferrer">
-                查看仓库
-                <i data-lucide="github"></i>
+                <span data-i18n="project.viewRepo">查看仓库</span>
+                <img class="github-icon" src="img/icon/github.svg" alt="" aria-hidden="true">
               </a>
             </div>
           </div>
@@ -101,24 +129,24 @@
 
         <article class="recent-post-item reveal">
           <div class="post_cover">
-            <a href="pwm_monitor/" aria-label="打开 PWM Monitor 工具">
-              <img src="assets/projects/project-pwm.png" alt="PWM Monitor 项目封面">
+            <a href="categories/pwm_monitor/" data-i18n-attr="aria-label:project.pwm.aria" aria-label="打开 PWM Monitor 工具">
+              <img src="img/projects/project-pwm.png" data-i18n-attr="alt:project.pwm.cover" alt="PWM Monitor 项目封面">
             </a>
           </div>
           <div class="recent-post-info">
-            <a class="article-title" href="pwm_monitor/">PWM Monitor</a>
+            <a class="article-title" href="categories/pwm_monitor/" data-i18n="project.pwm.title">PWM Monitor</a>
             <div class="article-meta-wrap">
-              <span class="meta-item"><i data-lucide="calendar"></i>更新于 2026-08-14</span>
-              <span class="meta-item"><i data-lucide="folder"></i>工具 · Web Serial</span>
+              <span class="meta-item"><i data-lucide="calendar"></i><span data-i18n="project.pwm.date">更新于 2026-08-14</span></span>
+              <span class="meta-item"><i data-lucide="folder"></i><span data-i18n="project.pwm.meta">工具 · Web Serial</span></span>
             </div>
-            <p class="content">通过 Web Serial 连接开发板，实时捕获并监控多路 PWM 频率与占空比，支持通道开关、统计和导出 Excel。</p>
-            <div class="tags" aria-label="项目标签">
-              <a href="pwm_monitor/">HTML</a>
-              <a href="pwm_monitor/">CSS</a>
-              <a href="pwm_monitor/">Web Serial</a>
+            <p class="content" data-i18n="project.pwm.desc">通过 Web Serial 连接开发板，实时捕获并监控多路 PWM 频率与占空比，支持通道开关、统计和导出 Excel。</p>
+            <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
+              <a href="categories/pwm_monitor/">HTML</a>
+              <a href="categories/pwm_monitor/">CSS</a>
+              <a href="categories/pwm_monitor/">Web Serial</a>
             </div>
-            <a class="read-more read-more--primary" href="pwm_monitor/">
-              在线使用
+            <a class="read-more read-more--primary" href="categories/pwm_monitor/">
+              <span data-i18n="project.use">在线使用</span>
               <i data-lucide="external-link"></i>
             </a>
           </div>
@@ -126,24 +154,24 @@
 
         <article class="recent-post-item reveal">
           <div class="post_cover">
-            <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer" aria-label="个人主页项目">
-              <img src="assets/projects/project-portfolio.png" alt="个人主页项目封面">
+            <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer" data-i18n-attr="aria-label:project.portfolio.aria" aria-label="个人主页项目">
+              <img src="img/projects/project-portfolio.png" data-i18n-attr="alt:project.portfolio.cover" alt="个人主页项目封面">
             </a>
           </div>
           <div class="recent-post-info">
-            <a class="article-title" href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">个人主页</a>
+            <a class="article-title" href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer" data-i18n="project.portfolio.title">个人主页</a>
             <div class="article-meta-wrap">
-              <span class="meta-item"><i data-lucide="calendar"></i>更新于 2026-08-14</span>
-              <span class="meta-item"><i data-lucide="folder"></i>站点 · GitHub Pages</span>
+              <span class="meta-item"><i data-lucide="calendar"></i><span data-i18n="project.portfolio.date">更新于 2026-08-14</span></span>
+              <span class="meta-item"><i data-lucide="folder"></i><span data-i18n="project.portfolio.meta">站点 · GitHub Pages</span></span>
             </div>
-            <p class="content">使用原生 HTML、CSS 和 JavaScript 构建的零依赖个人主页，参考博客式布局设计，可直接部署到 GitHub Pages。</p>
-            <div class="tags" aria-label="项目标签">
+            <p class="content" data-i18n="project.portfolio.desc">使用原生 HTML、CSS 和 JavaScript 构建的零依赖个人主页，参考博客式布局设计，可直接部署到 GitHub Pages。</p>
+            <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
               <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">HTML</a>
               <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">CSS</a>
               <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">GitHub Pages</a>
             </div>
             <a class="read-more" href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">
-              访问站点
+              <span data-i18n="project.visit">访问站点</span>
               <i data-lucide="external-link"></i>
             </a>
           </div>
@@ -151,65 +179,127 @@
 
         <article class="recent-post-item reveal">
           <div class="post_cover">
-            <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" aria-label="小工具实验室项目">
-              <img src="assets/projects/project-lab.png" alt="小工具实验室项目封面">
+            <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n-attr="aria-label:project.lab.aria" aria-label="小工具实验室项目">
+              <img src="img/projects/project-lab.png" data-i18n-attr="alt:project.lab.cover" alt="小工具实验室项目封面">
             </a>
           </div>
           <div class="recent-post-info">
-            <a class="article-title" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">小工具实验室</a>
+            <a class="article-title" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n="project.lab.title">小工具实验室</a>
             <div class="article-meta-wrap">
-              <span class="meta-item"><i data-lucide="calendar"></i>规划中</span>
-              <span class="meta-item"><i data-lucide="folder"></i>实验室 · 开源</span>
+              <span class="meta-item"><i data-lucide="calendar"></i><span data-i18n="project.lab.date">规划中</span></span>
+              <span class="meta-item"><i data-lucide="folder"></i><span data-i18n="project.lab.meta">实验室 · 开源</span></span>
             </div>
-            <p class="content">持续把日常问题做成小而可靠的工具，记录灵感、实验和可以复用的代码片段。</p>
-            <div class="tags" aria-label="项目标签">
+            <p class="content" data-i18n="project.lab.desc">持续把日常问题做成小而可靠的工具，记录灵感、实验和可以复用的代码片段。</p>
+            <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
               <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">Ideas</a>
               <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">Prototype</a>
               <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">Open Source</a>
             </div>
             <a class="read-more" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">
-              关注动态
+              <span data-i18n="project.follow">关注动态</span>
               <i data-lucide="external-link"></i>
             </a>
           </div>
         </article>
+
+        <nav class="pagination" id="pagination" aria-label="项目分页" data-i18n-attr="aria-label:pagination.aria"></nav>
       </section>
 
       <aside class="aside-content">
         <div class="sticky_layout">
           <div class="card-widget card-info reveal">
-            <img class="avatar-img" src="assets/favicon.png" alt="Zenith01888 头像">
+            <img class="avatar-img" src="img/favicon.jpg" data-i18n-attr="alt:aside.avatar.alt" alt="Zenith01888 头像">
             <p class="author-info__name">Zenith</p>
-            <p class="author-info__description">全栈开发者 · 效率工具爱好者</p>
+            <p class="author-info__description" data-i18n="aside.description">全栈开发者 · 效率工具爱好者</p>
             <div class="card-info-data">
               <a href="#recent-posts">
                 <span class="num">4</span>
-                <span class="headline">项目</span>
+                <span class="headline" data-i18n="aside.projects">项目</span>
               </a>
               <a href="#about">
                 <span class="num">1</span>
-                <span class="headline">站点</span>
+                <span class="headline" data-i18n="aside.sites">站点</span>
               </a>
               <a href="#contact">
                 <span class="num">∞</span>
-                <span class="headline">灵感</span>
+                <span class="headline" data-i18n="aside.ideas">灵感</span>
               </a>
             </div>
             <div class="card-info-social-icons">
-              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" aria-label="GitHub">
-                <i data-lucide="github"></i>
+              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n-attr="aria-label:aside.github" aria-label="GitHub">
+                <img class="github-icon" src="img/icon/github.svg" alt="" aria-hidden="true">
               </a>
-              <a href="mailto:zhantian.wei@outlook.com" aria-label="邮箱">
+              <a href="mailto:zhantian.wei@outlook.com" data-i18n-attr="aria-label:aside.email" aria-label="邮箱">
                 <i data-lucide="mail"></i>
               </a>
             </div>
-            <a class="card-info-btn" href="#about">关于我</a>
+            <a class="card-info-btn" href="#about" data-i18n="aside.about">关于我</a>
+          </div>
+
+          <div class="card-widget card-recent-post reveal">
+            <div class="item-headline">
+              <i data-lucide="history"></i>
+              <span data-i18n="aside.recentProjects">最新项目</span>
+            </div>
+            <div class="aside-list">
+              <a class="aside-list-item no-cover" href="categories/pdf-merge/">
+                <div class="content">
+                  <span class="name" data-i18n="aside.recent.pdfmerge">Pdfmerge</span>
+                  <time data-i18n="aside.recent.pdfmerge.date">2026-08-14</time>
+                </div>
+              </a>
+              <a class="aside-list-item no-cover" href="categories/pwm_monitor/">
+                <div class="content">
+                  <span class="name" data-i18n="aside.recent.pwm">PWM Monitor</span>
+                  <time data-i18n="aside.recent.pwm.date">2026-08-14</time>
+                </div>
+              </a>
+              <a class="aside-list-item no-cover" href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">
+                <div class="content">
+                  <span class="name" data-i18n="aside.recent.portfolio">个人主页</span>
+                  <time data-i18n="aside.recent.portfolio.date">2026-08-14</time>
+                </div>
+              </a>
+              <a class="aside-list-item no-cover" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">
+                <div class="content">
+                  <span class="name" data-i18n="aside.recent.lab">小工具实验室</span>
+                  <time data-i18n="aside.recent.lab.date">规划中</time>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="card-widget card-categories reveal">
+            <div class="item-headline">
+              <i data-lucide="folder-open"></i>
+              <span data-i18n="aside.categories">分类</span>
+            </div>
+            <ul class="card-category-list">
+              <li>
+                <a href="categories/pdf-merge/">
+                  <span class="name" data-i18n="category.pdf">PDF 工具</span>
+                  <span class="count">1</span>
+                </a>
+              </li>
+              <li>
+                <a href="categories/pwm_monitor/">
+                  <span class="name" data-i18n="category.serial">Web Serial</span>
+                  <span class="count">1</span>
+                </a>
+              </li>
+              <li>
+                <a href="https://Zenith01888.github.io/" target="_blank" rel="noreferrer">
+                  <span class="name" data-i18n="category.pages">GitHub Pages</span>
+                  <span class="count">1</span>
+                </a>
+              </li>
+            </ul>
           </div>
 
           <div class="card-widget card-tags reveal">
             <div class="item-headline">
               <i data-lucide="tag"></i>
-              <span>标签云</span>
+              <span data-i18n="aside.tagCloud">标签云</span>
             </div>
             <div class="tag-cloud">
               <a href="#skills">Web</a>
@@ -229,13 +319,13 @@
           <div class="card-widget card-webinfo reveal">
             <div class="item-headline">
               <i data-lucide="info"></i>
-              <span>站点信息</span>
+              <span data-i18n="aside.siteInfo">站点信息</span>
             </div>
             <div class="webinfo">
-              <div class="webinfo-item"><span>项目</span><b>4</b></div>
-              <div class="webinfo-item"><span>分类</span><b>3</b></div>
-              <div class="webinfo-item"><span>标签</span><b>11</b></div>
-              <div class="webinfo-item"><span>建站</span><b>2026-08</b></div>
+              <div class="webinfo-item"><span data-i18n="info.projects">项目</span><b>4</b></div>
+              <div class="webinfo-item"><span data-i18n="info.categories">分类</span><b>3</b></div>
+              <div class="webinfo-item"><span data-i18n="info.tags">标签</span><b>11</b></div>
+              <div class="webinfo-item"><span data-i18n="info.built">建站</span><b>2026-08</b></div>
             </div>
           </div>
         </div>
@@ -243,30 +333,36 @@
     </div>
 
     <section class="section about-section" id="about">
-      <h2 class="section-title reveal">关于我</h2>
+      <h2 class="section-title reveal" data-i18n="about.title">关于我</h2>
       <div class="about-grid reveal">
         <div class="about-copy">
-          <p>我是一名关注 Web 开发与效率工具的开发者，喜欢把日常问题变成小而可靠的产品。日常工作中，我关注前端工程、自动化脚本和产品体验，享受从想法到上线被真实使用的过程。</p>
-          <p>这个页面记录我的项目、兴趣和正在做的事。所有内容都保持小而清晰，正如我做工具时的原则。</p>
+          <p data-i18n="about.p1">我是一名关注 Web 开发与效率工具的开发者，喜欢把日常问题变成小而可靠的产品。日常工作中，我关注前端工程、自动化脚本和产品体验，享受从想法到上线被真实使用的过程。</p>
+          <p data-i18n="about.p2">这个页面记录我的项目、兴趣和正在做的事。所有内容都保持小而清晰，正如我做工具时的原则。</p>
+          <div class="about-social">
+            <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n-attr="aria-label:aside.github" aria-label="GitHub">
+              <img class="github-icon" src="img/icon/github.svg" alt="" aria-hidden="true">
+              <span>github.com/Zenith01888</span>
+            </a>
+          </div>
         </div>
         <div class="fact-list">
-          <div class="fact-row"><span>方向</span><strong>全栈开发与效率工具</strong></div>
-          <div class="fact-row"><span>状态</span><strong>持续开源与分享</strong></div>
-          <div class="fact-row"><span>常驻</span><strong>上海 / 远程</strong></div>
-          <div class="fact-row"><span>关注</span><strong>可用性 · 自动化 · 小工具</strong></div>
+          <div class="fact-row"><span data-i18n="fact.direction">方向</span><strong data-i18n="fact.direction.value">全栈开发与效率工具</strong></div>
+          <div class="fact-row"><span data-i18n="fact.status">状态</span><strong data-i18n="fact.status.value">持续开源与分享</strong></div>
+          <div class="fact-row"><span data-i18n="fact.base">常驻</span><strong data-i18n="fact.base.value">浙江 / 远程</strong></div>
+          <div class="fact-row"><span data-i18n="fact.focus">关注</span><strong data-i18n="fact.focus.value">可用性 · 自动化 · 小工具</strong></div>
         </div>
       </div>
     </section>
 
     <section class="section contact-section" id="contact">
-      <h2 class="section-title reveal">联系我</h2>
+      <h2 class="section-title reveal" data-i18n="contact.title">联系我</h2>
       <div class="contact-links reveal">
         <a class="contact-link" href="mailto:zhantian.wei@outlook.com">
           <i data-lucide="mail"></i>
           <span>zhantian.wei@outlook.com</span>
         </a>
         <a class="contact-link" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">
-          <i data-lucide="github"></i>
+          <img class="github-icon" src="img/icon/github.svg" alt="" aria-hidden="true">
           <span>github.com/Zenith01888</span>
         </a>
       </div>
@@ -275,13 +371,37 @@
 
   <footer class="site-footer">
     <div class="footer-wrap">
-      <p>© <span id="year">2026</span> Zenith01888 · 用代码把复杂问题变简单</p>
+      <p><span data-i18n="footer.copyright">©</span> <span id="year">2026</span> <span data-i18n="footer.suffix">用代码把复杂问题变简单</span></p>
       <p class="footer-links">
         <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">GitHub</a>
         <span class="footer-separator">|</span>
-        <a href="mailto:zhantian.wei@outlook.com">邮箱</a>
+        <a href="mailto:zhantian.wei@outlook.com" data-i18n="footer.email">邮箱</a>
       </p>
     </div>
   </footer>
+
+  <div id="rightside" aria-label="右侧工具" data-i18n-attr="aria-label:widgets.rightside">
+    <div id="rightside-config-hide" aria-hidden="true">
+      <button class="rightside-widget rightside-widget--lang" id="langToggle" type="button" data-i18n-attr="aria-label:lang.aria title:lang.aria">
+        <span data-i18n="lang.toggle">EN</span>
+      </button>
+      <button class="rightside-widget" id="themeToggle" type="button" aria-pressed="false" data-i18n-attr="aria-label:theme.dark title:theme.dark">
+        <i data-lucide="moon" class="theme-icon theme-icon--dark"></i>
+        <i data-lucide="sun" class="theme-icon theme-icon--light"></i>
+      </button>
+      <button class="rightside-widget" id="bwToggle" type="button" aria-pressed="false" data-i18n-attr="aria-label:bw.aria title:bw.aria">
+        <i data-lucide="contrast"></i>
+      </button>
+    </div>
+    <div id="rightside-config-show">
+      <button class="rightside-widget" id="rightsideConfig" type="button" data-i18n-attr="aria-label:widgets.config title:widgets.config">
+        <i data-lucide="settings"></i>
+      </button>
+      <button class="rightside-widget rightside-widget--up" id="goUp" type="button" data-i18n-attr="aria-label:widgets.goUp title:widgets.goUp">
+        <span class="scroll-percent" id="scrollPercent">0</span>
+        <i data-lucide="arrow-up"></i>
+      </button>
+    </div>
+  </div>
 </body>
 </html>
