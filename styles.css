@@ -103,7 +103,7 @@ div[id] {
   color: #fff;
   background:
     linear-gradient(rgba(73, 177, 245, 0.72), rgba(73, 177, 245, 0.64)),
-    url("assets/hero.png") center / cover no-repeat;
+    url("assets/hero.png?v=20260814") center / cover no-repeat;
 }
 
 .site-nav {
