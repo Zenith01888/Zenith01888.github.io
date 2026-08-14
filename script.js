@@ -1,26 +1,29 @@
 (function () {
-  const root = document.documentElement;
-  const themeToggle = document.getElementById("themeToggle");
-  const menuToggle = document.getElementById("menuToggle");
-  const siteNav = document.getElementById("siteNav");
+  const nav = document.getElementById("siteNav");
+  const navToggle = document.getElementById("navToggle");
+  const navLinks = document.getElementById("navLinks");
   const year = document.getElementById("year");
 
-  const savedTheme = localStorage.getItem("zenith01888-theme");
-  const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-  root.dataset.theme = savedTheme || systemTheme;
+  const onScroll = () => {
+    nav.classList.toggle("scrolled", window.scrollY > 40);
+  };
 
-  if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
-      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
-      localStorage.setItem("zenith01888-theme", root.dataset.theme);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  if (navToggle && navLinks) {
+    navToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("open");
+      navToggle.setAttribute("aria-expanded", String(isOpen));
+      navToggle.setAttribute("aria-label", isOpen ? "关闭菜单" : "打开菜单");
     });
-  }
 
-  if (menuToggle && siteNav) {
-    menuToggle.addEventListener("click", () => {
-      const isOpen = siteNav.classList.toggle("nav-open");
-      menuToggle.setAttribute("aria-expanded", String(isOpen));
-      menuToggle.setAttribute("aria-label", isOpen ? "关闭菜单" : "打开菜单");
+    navLinks.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+        navToggle.setAttribute("aria-expanded", "false");
+        navToggle.setAttribute("aria-label", "打开菜单");
+      });
     });
   }
 
@@ -34,19 +37,11 @@
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
-          const skillRow = entry.target.closest(".skill-row");
-          if (skillRow) {
-            const level = skillRow.dataset.level || 0;
-            const meter = skillRow.querySelector(".meter span");
-            if (meter) {
-              meter.style.width = `${level}%`;
-            }
-          }
           observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.1 }
   );
 
   reveals.forEach((element) => observer.observe(element));
