@@ -100,10 +100,8 @@ div[id] {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  background:
-    linear-gradient(rgba(73, 177, 245, 0.72), rgba(73, 177, 245, 0.64)),
-    url("assets/hero.png?v=20260814") center / cover no-repeat;
+  color: var(--font-color);
+  background: transparent;
 }
 
 .site-nav {
@@ -134,7 +132,7 @@ div[id] {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: #fff;
+  color: var(--font-color);
   font-size: 16px;
   font-weight: 800;
   transition: color 300ms ease;
@@ -158,7 +156,7 @@ div[id] {
 }
 
 .nav-links a {
-  color: #fff;
+  color: var(--font-color);
   font-size: 14px;
   font-weight: 600;
   transition: color 300ms ease;
@@ -183,7 +181,7 @@ div[id] {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #fff;
+  color: var(--font-color);
   font-size: 14px;
   font-weight: 600;
   transition: color 300ms ease;
@@ -251,7 +249,7 @@ div[id] {
   justify-content: center;
   border: 0;
   background: transparent;
-  color: #fff;
+  color: var(--font-color);
 }
 
 .nav-toggle svg {
@@ -266,17 +264,15 @@ div[id] {
 }
 
 .site-title {
-  color: #fff;
+  color: var(--text-highlight);
   font-size: clamp(2.2rem, 6vw, 4rem);
   line-height: 1.25;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .site-subtitle {
   margin-top: 16px;
-  color: #eef6ff;
+  color: var(--font-color);
   font-size: clamp(1rem, 2.2vw, 1.5rem);
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .scroll-down {
@@ -284,7 +280,7 @@ div[id] {
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%);
-  color: #fff;
+  color: var(--theme);
   animation: float 2s ease-in-out infinite;
 }
 
