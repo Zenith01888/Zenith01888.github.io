@@ -135,14 +135,15 @@ python -m unittest discover -s tests -v
 ├── oscilloscope.py      # 示波器驱动 (PyVISA + SCPI, 厂商自动识别)
 ├── config.py            # 连接与测量参数默认值
 ├── requirements.txt     # Python 依赖
-├── tokens.css           # Hallmark 设计令牌 (OKLCH 颜色 / Geist 字体)
 ├── static/app.css       # 页面样式
 ├── static/app.js        # 前端仪表盘逻辑
-├── templates/index.html # Web 页面
+├── templates/index.html # Flask Web 页面
+├── web/
+│   ├── index.html       # GitHub Pages 浏览器演示页面
+│   └── demo.js          # 浏览器内模拟数据后端
 ├── tests/
 │   └── test_oscilloscope.py
-├── AGENTS.md / CLAUDE.md # 项目指导文档
-└── .hallmark/log.json    # 设计迭代记录
+└── README.md
 ```
 
 ## 技术栈
