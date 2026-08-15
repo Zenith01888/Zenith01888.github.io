@@ -5,7 +5,7 @@
     return document.getElementById(id);
   };
 
-  var STORAGE_KEY = "zenith-study-room-v1";
+  var STORAGE_KEY = "zenith-study-room-v2";
   var QUOTES = [
     "把注意力放在眼前这一件事上。",
     "一次只做一件事，做完再抬头。",
@@ -14,95 +14,33 @@
     "保持节奏，而不是追赶。",
     "房间安静下来，思路才会变清楚。",
   ];
+  var CHAT_REPLIES = [
+    "收到，我把它记下来了。",
+    "专注完这一轮再回来看看。",
+    "房间里只有你的呼吸声和键盘声。",
+    "好的，保持这个节奏。",
+    "现在很适合把最难的一题写完。",
+  ];
   var MODE_LABELS = {
     focus: "专注",
     break: "休息",
     long: "长休息",
-  };
-  var TRACKS = [
-    {
-      title: "晨光练习曲",
-      artist: "云上电台",
-      duration: 60,
-      root: 261.63,
-      chords: [[0, 4, 7], [0, 4, 7], [7, 11, 14], [5, 9, 12]],
-      melody: [0, 2, 4, 3, 2, 4, 5, 4, 2, 4, 7, 5, 4, 2, 0, 0],
-      lyrics: [
-        "翻开今天的第一页",
-        "窗外雨声刚好",
-        "呼吸放慢一拍",
-        "把题目交给耐心",
-        "答案会自己出现",
-        "这一页读完再休息",
-      ],
-    },
-    {
-      title: "夜航笔记",
-      artist: "云上电台",
-      duration: 60,
-      root: 146.83,
-      chords: [[0, 3, 7], [0, 3, 7], [7, 10, 14], [3, 7, 10]],
-      melody: [5, 4, 3, 2, 4, 5, 7, 4, 3, 2, 1, 0, 2, 4, 3, 2],
-      lyrics: [
-        "夜色把窗台擦亮",
-        "纸页翻过一页",
-        "笔尖落在哪一行",
-        "时间就停在那一行",
-        "不必急着抵达",
-        "灯亮着，路就清楚",
-      ],
-    },
-    {
-      title: "雨后半场",
-      artist: "云上电台",
-      duration: 60,
-      root: 174.61,
-      chords: [[0, 4, 7], [7, 11, 14], [5, 9, 12], [9, 12, 16]],
-      melody: [4, 5, 7, 5, 4, 2, 4, 5, 7, 9, 7, 5, 4, 2, 0, 2],
-      lyrics: [
-        "雨停以后空气很轻",
-        "刚学的公式还在纸上",
-        "把混乱整理成行",
-        "留白也属于完成",
-        "慢慢来，比较快",
-        "下一段会更有力气",
-      ],
-    },
-    {
-      title: "云上慢车",
-      artist: "云上电台",
-      duration: 60,
-      root: 196,
-      chords: [[0, 4, 7], [5, 9, 12], [3, 7, 10], [0, 4, 7]],
-      melody: [7, 5, 4, 2, 4, 5, 7, 5, 4, 2, 0, 2, 4, 5, 4, 0],
-      lyrics: [
-        "没有哪一站必须准时",
-        "窗外风景慢慢经过",
-        "今天的进度已经出发",
-        "专心比完美更重要",
-        "先把手上的事做完",
-        "下一站自有安排",
-      ],
-    },
-  ];
-  var SCENES = {
-    p1: { type: "image", src: "assets/p1.webp", label: "P1 图片" },
+    timer: "计时器",
   };
 
   var DEFAULTS = {
     settings: {
       focusMin: 25,
       breakMin: 5,
-      rounds: 4,
       longBreakMin: 15,
-      scene: "p1",
-      sound: "rain",
-      volume: 55,
+      rounds: 4,
+      timerType: "pomodoro",
       autoBreak: true,
       strictMode: false,
       showTips: true,
       neteaseId: "12275290957",
-      neteaseType: 0,
+      volume: 55,
+      sound: "none",
     },
     todos: [],
     stats: {
@@ -111,17 +49,20 @@
       longestSeconds: 0,
       history: {},
     },
+    chat: [],
   };
 
   function loadState() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) raw = localStorage.getItem("zenith-study-room-v1");
       if (!raw) return JSON.parse(JSON.stringify(DEFAULTS));
       var parsed = JSON.parse(raw);
       var base = JSON.parse(JSON.stringify(DEFAULTS));
       base.settings = Object.assign({}, base.settings, parsed.settings || {});
       base.todos = Array.isArray(parsed.todos) ? parsed.todos : [];
       base.stats = Object.assign({}, base.stats, parsed.stats || {});
+      base.chat = Array.isArray(parsed.chat) ? parsed.chat : [];
       return base;
     } catch (error) {
       return JSON.parse(JSON.stringify(DEFAULTS));
@@ -131,40 +72,30 @@
   var state = loadState();
   var timer = {
     running: false,
-    mode: "focus",
+    mode: state.settings.timerType === "timer" ? "timer" : "focus",
     remaining: state.settings.focusMin * 60,
     total: state.settings.focusMin * 60,
     round: 1,
     endsAt: null,
+    lastTickAt: 0,
     sessionElapsed: 0,
     sessionRest: 0,
-    lastFocusSeconds: 0,
-    lastRestSeconds: 0,
-    lastTickAt: 0,
     interval: null,
   };
 
   var audioCtx = null;
   var master = null;
   var activeSound = "none";
-  var activeNodes = [];
-  var activeTimers = [];
-  var soundDockTimer = null;
+  var ambientNodes = [];
+  var ambientTimers = [];
   var quoteIndex = Math.floor(Math.random() * QUOTES.length);
-  var musicTrackIndex = 0;
-  var musicPlaying = false;
-  var musicGain = null;
-  var musicStartAt = 0;
-  var musicPausedAt = 0;
-  var musicElapsed = 0;
-  var musicTimer = null;
-  var musicLyricIndex = -1;
+  var chatReplyIndex = 0;
 
   function save() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
-      // Storage can be unavailable; the in-page state still works.
+      // Storage can be unavailable; in-page state still works.
     }
   }
 
@@ -201,6 +132,20 @@
     return (s / 3600).toFixed(1) + "h";
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function clampInt(value, min, max, fallback) {
+    var n = parseInt(value, 10);
+    if (Number.isNaN(n)) return fallback;
+    return Math.max(min, Math.min(max, n));
+  }
+
   function showToast(message, ms) {
     var stack = $("toastStack");
     var el = document.createElement("div");
@@ -215,65 +160,48 @@
     }, ms || 2400);
   }
 
+  function applyScene() {
+    var bg = $("roomBg");
+    if (bg) bg.style.backgroundImage = 'url("assets/p1.webp")';
+  }
+
   function modeSeconds(mode) {
     if (mode === "break") return state.settings.breakMin * 60;
-    if (mode === "long") return state.settings.longBreakMin * 60;
+    if (mode === "long") return (state.settings.longBreakMin || 15) * 60;
     return state.settings.focusMin * 60;
   }
 
-  function applyScene() {
-    var scene = state.settings.scene;
-    if (!SCENES[scene]) scene = "p1";
-    state.settings.scene = scene;
-    document.documentElement.dataset.scene = scene;
-    var cfg = SCENES[scene];
-    var bg = $("roomBg");
-    if (bg) bg.style.backgroundImage = 'url("' + cfg.src + '")';
-  }
-
   function renderTimerUI() {
+    if (state.settings.timerType === "timer" && timer.mode !== "timer") {
+      timer.mode = "timer";
+    }
     timer.total = modeSeconds(timer.mode);
     $("timeText").textContent = fmtTime(timer.remaining);
+    $("navTime").textContent = fmtTime(timer.remaining);
     $("modeBadge").textContent = MODE_LABELS[timer.mode] || "专注";
+    $("navMode").textContent = state.settings.timerType === "timer" ? "计时器" : "番茄钟";
 
     var cycle = timer.mode === "focus"
       ? ((timer.round - 1) % state.settings.rounds) + 1
       : timer.round;
-    $("roundText").textContent = timer.mode === "focus"
-      ? "第 " + cycle + " / " + state.settings.rounds + " 轮"
-      : (timer.mode === "long" ? "长休息" : "休息中");
+    if (timer.mode === "focus") {
+      $("roundText").textContent = "第 " + cycle + " / " + state.settings.rounds + " 轮";
+      $("navStatus").textContent = timer.running ? "专注中" : "等待开始";
+    } else if (timer.mode === "timer") {
+      $("roundText").textContent = "倒计时";
+      $("navStatus").textContent = timer.running ? "计时中" : "等待开始";
+    } else {
+      $("roundText").textContent = timer.mode === "long" ? "长休息" : "休息中";
+      $("navStatus").textContent = "休息中";
+    }
 
     var progress = timer.total > 0
       ? Math.max(0, Math.min(1, 1 - timer.remaining / timer.total))
       : 0;
     $("timerRing").style.setProperty("--progress", progress.toFixed(4));
-    $("sessionBar").style.width = (progress * 100).toFixed(2) + "%";
-
-    var focusSeconds = timer.mode === "focus" ? timer.sessionElapsed : timer.lastFocusSeconds;
-    var restSeconds = timer.mode === "focus" ? timer.lastRestSeconds : timer.sessionRest;
-    if ($("sessionFocusText")) $("sessionFocusText").textContent = fmtTime(focusSeconds);
-    if ($("sessionRestText")) $("sessionRestText").textContent = fmtTime(restSeconds);
-    if ($("timerPrompt")) {
-      if (!timer.running && timer.mode === "focus") {
-        $("timerPrompt").textContent = "开始认真学习/工作吧";
-      } else if (!timer.running) {
-        $("timerPrompt").textContent = "休息中，先放松一下";
-      } else if (timer.mode === "focus") {
-        $("timerPrompt").textContent = "保持节奏，认真完成这一轮";
-      } else {
-        $("timerPrompt").textContent = "休息中，听听音乐或活动一下";
-      }
-    }
-    if ($("sessionStatus")) {
-      $("sessionStatus").textContent = timer.mode === "focus"
-        ? "本次专注 " + fmtTime(focusSeconds)
-        : "休息中 · 已休息 " + fmtTime(restSeconds);
-    }
 
     var primary = $("primaryTimer");
-    primary.innerHTML =
-      "<span>" + (timer.running ? "暂停" : "开始") + "</span>" +
-      '<i data-lucide="' + (timer.running ? "pause" : "play") + '"></i>';
+    primary.innerHTML = '<i data-lucide="' + (timer.running ? "pause" : "play") + '"></i>';
     refreshIcons();
   }
 
@@ -282,6 +210,17 @@
       clearInterval(timer.interval);
       timer.interval = null;
     }
+  }
+
+  function switchMode(mode, keepRemaining) {
+    pauseTimer();
+    if (state.settings.timerType === "timer" && mode === "focus") mode = "timer";
+    timer.mode = mode;
+    timer.remaining = keepRemaining ? timer.remaining : modeSeconds(mode);
+    timer.total = modeSeconds(mode);
+    timer.sessionElapsed = 0;
+    timer.sessionRest = 0;
+    renderTimerUI();
   }
 
   function startTimer() {
@@ -305,12 +244,24 @@
     renderTimerUI();
   }
 
+  function resetTimer() {
+    pauseTimer();
+    timer.mode = state.settings.timerType === "timer" ? "timer" : "focus";
+    timer.remaining = modeSeconds(timer.mode);
+    timer.total = modeSeconds(timer.mode);
+    timer.round = 1;
+    timer.sessionElapsed = 0;
+    timer.sessionRest = 0;
+    renderTimerUI();
+  }
+
   function tick() {
     var now = Date.now();
     if (timer.lastTickAt) {
       var dt = (now - timer.lastTickAt) / 1000;
       if (dt > 0 && dt < 10) {
         if (timer.mode === "focus") timer.sessionElapsed += dt;
+        else if (timer.mode === "timer") timer.sessionElapsed += dt;
         else timer.sessionRest += dt;
       }
     }
@@ -320,6 +271,16 @@
     if (timer.remaining <= 0) completeTimer();
   }
 
+  function recordFocus(seconds) {
+    state.stats.sessions += 1;
+    state.stats.totalSeconds += seconds;
+    state.stats.longestSeconds = Math.max(state.stats.longestSeconds, seconds);
+    var key = todayKey();
+    state.stats.history[key] = (state.stats.history[key] || 0) + seconds;
+    save();
+    renderStats();
+  }
+
   function completeTimer() {
     clearTimerInterval();
     timer.running = false;
@@ -327,26 +288,24 @@
     timer.lastTickAt = 0;
 
     if (timer.mode === "focus") {
-      var completed = timer.round;
-      var nextMode = completed % state.settings.rounds === 0 ? "long" : "break";
       var seconds = Math.max(1, Math.round(timer.sessionElapsed));
-      timer.lastFocusSeconds = seconds;
-      state.stats.sessions += 1;
-      state.stats.totalSeconds += seconds;
-      state.stats.longestSeconds = Math.max(state.stats.longestSeconds, seconds);
-      var key = todayKey();
-      state.stats.history[key] = (state.stats.history[key] || 0) + seconds;
+      recordFocus(seconds);
+      var nextMode = timer.round % state.settings.rounds === 0 ? "long" : "break";
       timer.round += 1;
       timer.sessionElapsed = 0;
-      save();
-      renderStats();
       playBell();
-      showToast("专注完成，本次共学习 " + fmtShort(seconds) + "，休息一下");
+      showToast("专注完成，本次学习 " + fmtShort(seconds));
       switchMode(nextMode, false);
       if (state.settings.autoBreak) startTimer();
+    } else if (timer.mode === "timer") {
+      var timerSeconds = Math.max(1, Math.round(timer.sessionElapsed));
+      recordFocus(timerSeconds);
+      timer.sessionElapsed = 0;
+      playBell();
+      showToast("计时完成，本次专注 " + fmtShort(timerSeconds));
+      resetTimer();
     } else {
       var restSeconds = Math.max(1, Math.round(timer.sessionRest));
-      timer.lastRestSeconds = restSeconds;
       timer.sessionRest = 0;
       showToast("休息结束，已休息 " + fmtShort(restSeconds));
       switchMode("focus", false);
@@ -354,51 +313,19 @@
     }
   }
 
-  function resetTimer() {
-    pauseTimer();
-    timer.mode = timer.mode;
-    timer.remaining = modeSeconds(timer.mode);
-    timer.total = modeSeconds(timer.mode);
-    timer.sessionElapsed = 0;
-    timer.sessionRest = 0;
-    timer.lastFocusSeconds = 0;
-    timer.lastRestSeconds = 0;
-    renderTimerUI();
-  }
-
-  function switchMode(mode, keepRemaining) {
-    pauseTimer();
-    var prevMode = timer.mode;
-    if (prevMode !== mode) {
-      if (prevMode === "focus") timer.lastFocusSeconds = timer.sessionElapsed;
-      if (prevMode !== "focus") timer.lastRestSeconds = timer.sessionRest;
-    }
-    timer.mode = mode;
-    timer.remaining = keepRemaining ? timer.remaining : modeSeconds(mode);
-    timer.total = modeSeconds(mode);
-    timer.sessionElapsed = 0;
-    timer.sessionRest = 0;
-    document.querySelectorAll(".mode-switch button").forEach(function (btn) {
-      var on = btn.dataset.mode === (mode === "long" ? "break" : mode);
-      btn.classList.toggle("active", on);
-      btn.setAttribute("aria-selected", on ? "true" : "false");
-    });
-    renderTimerUI();
-  }
-
   function renderTasks() {
     var list = $("taskList");
     if (!state.todos.length) {
-      list.innerHTML = '<li class="empty-tasks">写下今天的第一个任务</li>';
+      list.innerHTML = '<li class="task-row"><span class="task-text">写下今天的第一个任务</span></li>';
     } else {
       list.innerHTML = state.todos.map(function (task) {
         return (
-          '<li class="task-row' + (task.done ? " done" : "") + (task.pinned ? " pinned" : "") + '" data-id="' + task.id + '">' +
+          '<li class="task-row' + (task.done ? " done" : "") + '" data-id="' + task.id + '">' +
             '<button class="task-check" type="button" data-action="toggle" title="完成" aria-label="完成">' +
               '<i data-lucide="check"></i>' +
             "</button>" +
             '<span class="task-text">' + escapeHtml(task.text) + "</span>" +
-            '<button class="icon-btn' + (task.pinned ? " pin-active" : "") + '" type="button" data-action="pin" title="固定" aria-label="固定">' +
+            '<button class="icon-btn' + (task.pinned ? " green" : "") + '" type="button" data-action="pin" title="固定" aria-label="固定">' +
               '<i data-lucide="pin"></i>' +
             "</button>" +
             '<button class="icon-btn" type="button" data-action="delete" title="删除" aria-label="删除">' +
@@ -416,18 +343,8 @@
     var pinned = state.todos.find(function (task) {
       return task.pinned;
     });
-    var pinnedText = pinned ? pinned.text : "还没有固定任务";
-    $("pinnedTask").textContent = pinnedText;
-    $("statusTask").textContent = pinnedText;
+    $("pinnedTask").textContent = pinned ? pinned.text : "还没有固定任务";
     refreshIcons();
-  }
-
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
   }
 
   function addTask(text) {
@@ -482,7 +399,6 @@
     $("statTotal").textContent = fmtHours(state.stats.totalSeconds);
     $("statSessions").textContent = state.stats.sessions;
     $("statLongest").textContent = fmtShort(state.stats.longestSeconds);
-    $("todayStatus").textContent = "今日 " + fmtShort(todaySec);
     renderWeekHeat();
   }
 
@@ -497,31 +413,22 @@
       var sec = state.stats.history[key] || 0;
       var level = sec >= 3600 ? "l4" : sec >= 1800 ? "l3" : sec >= 900 ? "l2" : sec > 0 ? "l1" : "";
       cells.push(
-        '<div class="heat-cell ' + level + '" data-label="' + labels[(date.getDay() + 6) % 7] + '" title="' + fmtShort(sec) + '"></div>'
+        '<div class="heat-cell ' + level + '" title="' + labels[(date.getDay() + 6) % 7] + " " + fmtShort(sec) + '"></div>'
       );
     }
     $("weekHeat").innerHTML = cells.join("");
   }
 
-  function renderRoomStatus() {
-    $("roomStatus").textContent = "本地专注";
-    $("avatarStack").innerHTML = "<span>R</span>";
+  function renderHint() {
+    var text = state.settings.showTips
+      ? "「" + QUOTES[quoteIndex % QUOTES.length] + "」"
+      : "云上自习室 · Local-first";
+    $("hintText").textContent = text;
   }
 
-  function renderQuote() {
-    var block = $("quoteBlock");
-    var text = $("quoteText");
-    if (block) block.hidden = !state.settings.showTips;
-    if (text) text.textContent = QUOTES[quoteIndex % QUOTES.length];
-  }
-
-  function nextQuote() {
+  function nextHint() {
     quoteIndex = (quoteIndex + 1) % QUOTES.length;
-    renderQuote();
-  }
-
-  function updateClock() {
-    $("clockText").textContent = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+    renderHint();
   }
 
   function ensureAudio() {
@@ -538,14 +445,12 @@
     return audioCtx;
   }
 
-  function stopSound() {
-    var wasNetease = activeSound === "netease";
-    stopMusic();
-    activeTimers.forEach(function (id) {
+  function stopAmbient() {
+    ambientTimers.forEach(function (id) {
       clearInterval(id);
     });
-    activeTimers = [];
-    activeNodes.forEach(function (node) {
+    ambientTimers = [];
+    ambientNodes.forEach(function (node) {
       try {
         node.stop();
       } catch (error) {
@@ -557,49 +462,9 @@
         // Already disconnected.
       }
     });
-    activeNodes = [];
+    ambientNodes = [];
     activeSound = "none";
-    if (wasNetease) hideNeteasePlayer();
-    $("soundBtn").classList.remove("active");
-    $("soundBtn").setAttribute("aria-pressed", "false");
     updateSoundButtons();
-  }
-
-  function hideNeteasePlayer() {
-    if (window.studyRoomNetEase) window.studyRoomNetEase.stop();
-    document.body.classList.remove("netease-active");
-  }
-
-  function parseNeteaseId(value) {
-    var text = String(value || "").trim();
-    var id = state.settings.neteaseId || "12275290957";
-    var type = state.settings.neteaseType || 0;
-    var urlMatch = text.match(/id=(\d+)/i);
-    var directMatch = text.match(/^\d+$/);
-    if (urlMatch) {
-      id = urlMatch[1];
-    } else if (directMatch) {
-      id = directMatch[0];
-    } else if (text) {
-      id = "12275290957";
-    }
-    if (/playlist/i.test(text)) type = 0;
-    else if (/song/i.test(text)) type = 2;
-    else if (/album/i.test(text)) type = 1;
-    else if (/djradio/i.test(text)) type = 3;
-    return { id: id, type: type };
-  }
-
-  function loadNeteasePlayer() {
-    var parsed = parseNeteaseId(state.settings.neteaseId);
-    state.settings.neteaseId = parsed.id;
-    state.settings.neteaseType = parsed.type;
-    if (window.studyRoomNetEase) {
-      window.studyRoomNetEase.load(parsed.id);
-      window.studyRoomNetEase.open();
-    }
-    document.body.classList.add("netease-active");
-    save();
   }
 
   function makeNoiseBuffer(ctx, seconds) {
@@ -619,12 +484,12 @@
     filter.type = "lowpass";
     filter.frequency.value = 900;
     var gain = ctx.createGain();
-    gain.gain.value = 0.24;
+    gain.gain.value = 0.22;
     source.connect(filter);
     filter.connect(gain);
     gain.connect(master);
     source.start();
-    activeNodes.push(source, filter, gain);
+    ambientNodes.push(source, filter, gain);
   }
 
   function makeCafe(ctx) {
@@ -635,19 +500,19 @@
     filter.type = "lowpass";
     filter.frequency.value = 520;
     var gain = ctx.createGain();
-    gain.gain.value = 0.16;
+    gain.gain.value = 0.14;
     source.connect(filter);
     filter.connect(gain);
     gain.connect(master);
     source.start();
-    activeNodes.push(source, filter, gain);
+    ambientNodes.push(source, filter, gain);
 
-    var timer = setInterval(function () {
+    var timerId = setInterval(function () {
       if (!audioCtx) return;
       var now = audioCtx.currentTime;
       var osc = audioCtx.createOscillator();
       osc.type = "triangle";
-      osc.frequency.value = 1600 + Math.random() * 1100;
+      osc.frequency.value = 1500 + Math.random() * 1200;
       var clink = audioCtx.createGain();
       clink.gain.setValueAtTime(0.0001, now);
       clink.gain.exponentialRampToValueAtTime(0.045, now + 0.012);
@@ -656,293 +521,38 @@
       clink.connect(master);
       osc.start(now);
       osc.stop(now + 0.12);
-      activeNodes.push(osc, clink);
-    }, 1100 + Math.random() * 900);
-    activeTimers.push(timer);
+      ambientNodes.push(osc, clink);
+    }, 1200 + Math.random() * 900);
+    ambientTimers.push(timerId);
   }
 
-  function makeLofi(ctx) {
-    var filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = 1500;
-    filter.Q.value = 0.4;
-    var gain = ctx.createGain();
-    gain.gain.value = 0.12;
-    filter.connect(gain);
-    gain.connect(master);
-    activeNodes.push(filter, gain);
-
-    var chords = [
-      [130.81, 164.81, 196.0, 246.94],
-      [110.0, 164.81, 196.0, 220.0],
-      [146.83, 174.61, 220.0, 261.63],
-      [98.0, 146.83, 196.0, 220.0],
-    ];
-    var oscs = chords[0].map(function (frequency) {
-      var osc = ctx.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.value = frequency;
-      osc.connect(filter);
-      osc.start();
-      activeNodes.push(osc);
-      return osc;
-    });
-
-    var lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.07;
-    var lfoGain = ctx.createGain();
-    lfoGain.gain.value = 420;
-    lfo.connect(lfoGain);
-    lfoGain.connect(filter.frequency);
-    lfo.start();
-    activeNodes.push(lfo, lfoGain);
-
-    var chordIndex = 0;
-    var timer = setInterval(function () {
-      chordIndex = (chordIndex + 1) % chords.length;
-      oscs.forEach(function (osc, index) {
-        osc.frequency.setValueAtTime(chords[chordIndex][index], ctx.currentTime);
-      });
-    }, 6000);
-    activeTimers.push(timer);
-  }
-
-  function stopMusic() {
-    musicPlaying = false;
-    musicGain = null;
-    musicStartAt = 0;
-    musicPausedAt = 0;
-    musicElapsed = 0;
-    musicLyricIndex = -1;
-    if (musicTimer) {
-      clearInterval(musicTimer);
-      musicTimer = null;
-    }
-    var lyric = $("musicLyricText");
-    if (lyric) lyric.textContent = "选择一首歌，开始今天的节奏。";
-  }
-
-  function makeTrackMusic(ctx, track) {
-    var filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = 1500;
-    filter.Q.value = 0.6;
-    var gain = ctx.createGain();
-    gain.gain.value = 0.13;
-    filter.connect(gain);
-    gain.connect(master);
-    activeNodes.push(filter, gain);
-    musicGain = gain;
-
-    var chords = track.chords.map(function (chord) {
-      return chord.map(function (semi) {
-        return track.root * Math.pow(2, semi / 12);
-      });
-    });
-    var oscs = chords[0].map(function (frequency) {
-      var osc = ctx.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.value = frequency;
-      osc.connect(filter);
-      osc.start();
-      activeNodes.push(osc);
-      return osc;
-    });
-
-    var lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.06;
-    var lfoGain = ctx.createGain();
-    lfoGain.gain.value = 340;
-    lfo.connect(lfoGain);
-    lfoGain.connect(filter.frequency);
-    lfo.start();
-    activeNodes.push(lfo, lfoGain);
-
-    var chordIndex = 0;
-    activeTimers.push(setInterval(function () {
-      chordIndex = (chordIndex + 1) % chords.length;
-      oscs.forEach(function (osc, index) {
-        osc.frequency.setValueAtTime(chords[chordIndex][index], ctx.currentTime);
-      });
-    }, 6000));
-
-    var scale = [0, 2, 4, 5, 7, 9, 11, 12];
-    var melodyIndex = 0;
-    activeTimers.push(setInterval(function () {
-      var degree = track.melody[melodyIndex % track.melody.length];
-      var freq = track.root * Math.pow(2, (12 + scale[degree % scale.length]) / 12);
-      var now = ctx.currentTime;
-      var osc = ctx.createOscillator();
-      osc.type = "sine";
-      osc.frequency.value = freq;
-      var note = ctx.createGain();
-      note.gain.setValueAtTime(0.0001, now);
-      note.gain.exponentialRampToValueAtTime(0.045, now + 0.02);
-      note.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
-      osc.connect(note);
-      note.connect(gain);
-      osc.start(now);
-      osc.stop(now + 0.9);
-      activeNodes.push(osc, note);
-      melodyIndex++;
-    }, 900));
-  }
-
-  function renderMusicUI() {
-    var track = TRACKS[musicTrackIndex] || TRACKS[0];
-    $("musicTitle").textContent = track.title;
-    $("musicArtist").textContent = track.artist;
-    $("musicDuration").textContent = fmtTime(track.duration);
-    var elapsed = musicStartAt
-      ? (musicPausedAt ? musicElapsed : musicElapsed + (Date.now() - musicStartAt) / 1000)
-      : musicElapsed;
-    $("musicElapsed").textContent = fmtTime(elapsed);
-    $("musicProgressBar").style.width = Math.min(100, (elapsed / track.duration) * 100) + "%";
-    musicLyricIndex = Math.min(
-      track.lyrics.length - 1,
-      Math.floor(elapsed / (track.duration / track.lyrics.length))
-    );
-    $("musicLyricText").textContent = track.lyrics[musicLyricIndex];
-    $("musicToggle").innerHTML = '<i data-lucide="' + (musicPlaying ? "pause" : "play") + '"></i>';
-    $("musicList").innerHTML = TRACKS.map(function (item, index) {
-      return (
-        '<li class="music-item' + (index === musicTrackIndex ? " active" : "") + '" data-index="' + index + '">' +
-          '<span class="music-index">' + String(index + 1).padStart(2, "0") + "</span>" +
-          "<div><strong>" + item.title + "</strong><span>" + item.artist + "</span></div>" +
-        "</li>"
-      );
-    }).join("");
-    refreshIcons();
-  }
-
-  function updateMusicProgress() {
-    if (!audioCtx || !musicStartAt) return;
-    var track = TRACKS[musicTrackIndex];
-    if (!track) return;
-    var elapsed = musicPausedAt
-      ? musicElapsed
-      : musicElapsed + (Date.now() - musicStartAt) / 1000;
-    if (elapsed >= track.duration) {
-      if (musicPlaying) {
-        nextTrack();
-        return;
-      }
-      elapsed = track.duration;
-    }
-    $("musicElapsed").textContent = fmtTime(elapsed);
-    $("musicProgressBar").style.width = Math.min(100, (elapsed / track.duration) * 100) + "%";
-    var lyricIndex = Math.min(
-      track.lyrics.length - 1,
-      Math.floor(elapsed / (track.duration / track.lyrics.length))
-    );
-    if (lyricIndex !== musicLyricIndex) {
-      musicLyricIndex = lyricIndex;
-      $("musicLyricText").textContent = track.lyrics[lyricIndex];
-    }
-  }
-
-  function startMusicTrack(index) {
-    stopSound();
-    activeSound = "music";
-    musicTrackIndex = ((index % TRACKS.length) + TRACKS.length) % TRACKS.length;
-    var ctx = ensureAudio();
-    if (!ctx) return;
-    var track = TRACKS[musicTrackIndex];
-    musicStartAt = Date.now();
-    musicElapsed = 0;
-    musicPausedAt = 0;
-    musicPlaying = true;
-    makeTrackMusic(ctx, track);
-    if (musicTimer) clearInterval(musicTimer);
-    musicTimer = setInterval(updateMusicProgress, 250);
-    state.settings.sound = "music";
-    save();
-    $("soundBtn").classList.add("active");
-    $("soundBtn").setAttribute("aria-pressed", "true");
-    updateSoundButtons();
-    renderMusicUI();
-  }
-
-  function toggleMusic() {
-    if (!musicPlaying) {
-      if (activeSound !== "music") {
-        startMusicTrack(musicTrackIndex);
-        return;
-      }
-      if (!audioCtx || !musicGain) return;
-      musicStartAt = Date.now();
-      musicPausedAt = 0;
-      musicPlaying = true;
-      musicGain.gain.setValueAtTime(0.13, audioCtx.currentTime);
-      if (musicTimer) clearInterval(musicTimer);
-      musicTimer = setInterval(updateMusicProgress, 250);
-    } else {
-      if (!audioCtx || !musicGain) return;
-      musicElapsed += (Date.now() - musicStartAt) / 1000;
-      musicPausedAt = Date.now();
-      musicPlaying = false;
-      musicGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-      if (musicTimer) {
-        clearInterval(musicTimer);
-        musicTimer = null;
-      }
-    }
-    renderMusicUI();
-  }
-
-  function nextTrack() {
-    startMusicTrack(musicTrackIndex + 1);
-  }
-
-  function prevTrack() {
-    startMusicTrack(musicTrackIndex - 1);
-  }
-
-  function startSound(type) {
+  function startAmbient(type) {
     if (type === "none") {
-      stopSound();
+      stopAmbient();
       state.settings.sound = "none";
       save();
       return;
     }
-    if (type === "netease") {
-      stopSound();
-      activeSound = "netease";
-      loadNeteasePlayer();
-      state.settings.sound = "netease";
-      save();
-      $("soundBtn").classList.add("active");
-      $("soundBtn").setAttribute("aria-pressed", "true");
-      updateSoundButtons();
-      return;
-    }
-    if (type === "music") {
-      startMusicTrack(musicTrackIndex);
-      return;
-    }
     var ctx = ensureAudio();
     if (!ctx) return;
-    stopSound();
+    stopAmbient();
     activeSound = type;
     if (type === "rain") makeRain(ctx);
     if (type === "cafe") makeCafe(ctx);
-    if (type === "lofi") makeLofi(ctx);
     state.settings.sound = type;
     save();
-    $("soundBtn").classList.add("active");
-    $("soundBtn").setAttribute("aria-pressed", "true");
     updateSoundButtons();
   }
 
   function updateSoundButtons() {
-    document.querySelectorAll(".sound-option").forEach(function (btn) {
+    document.querySelectorAll(".sound-grid button").forEach(function (btn) {
       btn.classList.toggle("active", btn.dataset.sound === activeSound);
     });
   }
 
   function playBell() {
     var ctx = ensureAudio();
-    if (!ctx) return;
+    if (!ctx || !master) return;
     var now = ctx.currentTime;
     [880, 1320].forEach(function (frequency, index) {
       var osc = ctx.createOscillator();
@@ -950,7 +560,7 @@
       osc.frequency.value = frequency;
       var gain = ctx.createGain();
       gain.gain.setValueAtTime(0.0001, now + index * 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.16, now + index * 0.12 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.14, now + index * 0.12 + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.12 + 0.7);
       osc.connect(gain);
       gain.connect(master);
@@ -959,30 +569,98 @@
     });
   }
 
-  function toggleSoundDock(open) {
-    var dock = $("soundDock");
-    if (soundDockTimer) {
-      clearTimeout(soundDockTimer);
-      soundDockTimer = null;
-    }
-    var isOpen = !dock.hidden && dock.classList.contains("show");
-    var shouldOpen = open !== undefined ? open : !isOpen;
-    if (shouldOpen) {
-      dock.hidden = false;
-      requestAnimationFrame(function () {
-        dock.classList.add("show");
-      });
-      if (activeSound === "none" && state.settings.sound !== "none") startSound(state.settings.sound);
+  function parseNeteaseId(value) {
+    var text = String(value || "").trim();
+    var urlMatch = text.match(/id=(\d+)/i);
+    var directMatch = text.match(/^\d+$/);
+    if (urlMatch) return urlMatch[1];
+    if (directMatch) return directMatch[0];
+    return state.settings.neteaseId || "12275290957";
+  }
+
+  function openNeteasePlayer() {
+    var playlistId = parseNeteaseId($("setNetease").value);
+    state.settings.neteaseId = playlistId;
+    save();
+    $("neteaseStatus").textContent = "已绑定歌单 " + playlistId;
+    if (window.studyRoomNetEase) {
+      window.studyRoomNetEase.load(playlistId);
+      window.studyRoomNetEase.open();
+      showToast("网易云歌单已打开", 1600);
     } else {
-      dock.classList.remove("show");
-      soundDockTimer = setTimeout(function () {
-        dock.hidden = true;
-        soundDockTimer = null;
-      }, 180);
+      showToast("播放器组件尚未加载完成", 2200);
     }
   }
 
-  function openSettings() {
+  function renderChat() {
+    if (!state.chat.length) {
+      state.chat = [{ role: "mate", name: "Room Mate", text: "晚上好，先把今天的任务写下来吧。" }];
+    }
+    var log = $("chatLog");
+    log.innerHTML = state.chat.map(function (message) {
+      var name = message.role === "me" ? "你" : (message.name || "Room Mate");
+      return (
+        '<div class="chat-bubble' + (message.role === "me" ? " mine" : "") + '">' +
+          '<span class="chat-name">' + escapeHtml(name) + "</span>" +
+          escapeHtml(message.text) +
+        "</div>"
+      );
+    }).join("");
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function sendChat(text) {
+    state.chat.push({ role: "me", name: "你", text: text });
+    save();
+    renderChat();
+    setTimeout(function () {
+      state.chat.push({
+        role: "mate",
+        name: "Room Mate",
+        text: CHAT_REPLIES[chatReplyIndex % CHAT_REPLIES.length],
+      });
+      chatReplyIndex += 1;
+      save();
+      renderChat();
+    }, 700);
+  }
+
+  function exportData() {
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "study-room-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast("备份已导出", 1800);
+  }
+
+  function importData(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (!parsed || typeof parsed !== "object") throw new Error("bad backup");
+        state.settings = Object.assign({}, DEFAULTS.settings, parsed.settings || {});
+        state.todos = Array.isArray(parsed.todos) ? parsed.todos : [];
+        state.stats = Object.assign({}, DEFAULTS.stats, parsed.stats || {});
+        state.chat = Array.isArray(parsed.chat) ? parsed.chat : [];
+        save();
+        refreshAll();
+        showToast("备份已导入", 1800);
+      } catch (error) {
+        showToast("备份文件格式不正确", 2600);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function refreshAll() {
+    document.body.classList.toggle("timer-type-simple", state.settings.timerType === "timer");
     $("setFocus").value = state.settings.focusMin;
     $("setBreak").value = state.settings.breakMin;
     $("setRounds").value = state.settings.rounds;
@@ -990,42 +668,43 @@
     $("setAuto").checked = !!state.settings.autoBreak;
     $("setStrict").checked = !!state.settings.strictMode;
     $("setTips").checked = !!state.settings.showTips;
-    $("settingsDialog").hidden = false;
-  }
-
-  function closeSettings() {
-    $("settingsDialog").hidden = true;
+    $("soundVolume").value = state.settings.volume;
+    resetTimer();
+    renderTasks();
+    renderStats();
+    renderHint();
+    renderChat();
+    updateSoundButtons();
+    refreshIcons();
   }
 
   function saveSettings() {
-    var focus = clampInt($("setFocus").value, 1, 120, 25);
-    var breakMin = clampInt($("setBreak").value, 1, 60, 5);
-    var rounds = clampInt($("setRounds").value, 1, 8, 4);
-    state.settings.focusMin = focus;
-    state.settings.breakMin = breakMin;
-    state.settings.rounds = rounds;
-    var netease = parseNeteaseId($("setNetease").value);
-    state.settings.neteaseId = netease.id;
-    state.settings.neteaseType = netease.type;
+    state.settings.focusMin = clampInt($("setFocus").value, 1, 120, 25);
+    state.settings.breakMin = clampInt($("setBreak").value, 1, 60, 5);
+    state.settings.rounds = clampInt($("setRounds").value, 1, 8, 4);
     state.settings.autoBreak = $("setAuto").checked;
     state.settings.strictMode = $("setStrict").checked;
     state.settings.showTips = $("setTips").checked;
     save();
-    if (activeSound === "netease") loadNeteasePlayer();
-    renderQuote();
     if (!timer.running) {
       timer.remaining = modeSeconds(timer.mode);
       timer.total = modeSeconds(timer.mode);
     }
     renderTimerUI();
-    closeSettings();
-    showToast("设置已保存", 1500);
+    renderHint();
   }
 
-  function clampInt(value, min, max, fallback) {
-    var n = parseInt(value, 10);
-    if (Number.isNaN(n)) return fallback;
-    return Math.max(min, Math.min(max, n));
+  function switchView(name) {
+    document.querySelectorAll(".view").forEach(function (view) {
+      view.classList.toggle("is-active", view.dataset.view === name);
+    });
+    document.querySelectorAll(".side-menu button").forEach(function (btn) {
+      btn.classList.toggle("active", btn.dataset.view === name);
+    });
+    if (name === "tasks") renderTasks();
+    if (name === "calendar") renderStats();
+    if (name === "music") updateSoundButtons();
+    if (name === "chat") renderChat();
   }
 
   function toggleFullscreen() {
@@ -1042,23 +721,17 @@
     refreshIcons();
   }
 
-  function setFocusMode(on) {
-    document.body.classList.toggle("focus-mode", on);
-    $("focusModeBtn").classList.toggle("active", on);
-    $("focusModeBtn").setAttribute("aria-pressed", on ? "true" : "false");
-    var exit = $("focusExitBtn");
-    if (exit) exit.hidden = !on;
-    if (on) showToast("沉浸模式已开启", 1400);
-  }
-
   function bindEvents() {
     $("primaryTimer").addEventListener("click", function () {
       if (timer.running) pauseTimer();
       else startTimer();
     });
-
     $("resetTimer").addEventListener("click", resetTimer);
     $("skipTimer").addEventListener("click", function () {
+      if (state.settings.timerType === "timer") {
+        resetTimer();
+        return;
+      }
       var next = timer.mode === "focus"
         ? (timer.round % state.settings.rounds === 0 ? "long" : "break")
         : "focus";
@@ -1066,9 +739,17 @@
       showToast("已切换计时", 1200);
     });
 
-    document.querySelectorAll(".mode-switch button").forEach(function (btn) {
+    document.querySelectorAll(".segmented button").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        switchMode(btn.dataset.mode, false);
+        state.settings.timerType = btn.dataset.timerType;
+        document.body.classList.toggle("timer-type-simple", state.settings.timerType === "timer");
+        document.querySelectorAll(".segmented button").forEach(function (item) {
+          var on = item === btn;
+          item.classList.toggle("active", on);
+          item.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        save();
+        resetTimer();
       });
     });
 
@@ -1092,40 +773,19 @@
       if (action === "pin") pinTask(id);
     });
 
-    $("focusModeBtn").addEventListener("click", function () {
-      setFocusMode(!document.body.classList.contains("focus-mode"));
-    });
-    $("timerRing").addEventListener("dblclick", function () {
-      setFocusMode(false);
-    });
-    $("focusExitBtn").addEventListener("click", function () {
-      setFocusMode(false);
-    });
-    $("quoteRefresh").addEventListener("click", function () {
-      nextQuote();
-      showToast("一言已更新", 1000);
+    document.querySelectorAll(".side-menu button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        switchView(btn.dataset.view);
+      });
     });
 
-    $("soundBtn").addEventListener("click", function () {
-      toggleSoundDock();
-    });
-    $("soundDockClose").addEventListener("click", function () {
-      toggleSoundDock(false);
-    });
     $("soundGrid").addEventListener("click", function (event) {
       var button = event.target.closest("[data-sound]");
       if (!button) return;
-      startSound(button.dataset.sound);
+      startAmbient(button.dataset.sound);
       showToast(button.textContent.trim() + " 已开启", 1200);
     });
-    $("musicToggle").addEventListener("click", toggleMusic);
-    $("musicPrev").addEventListener("click", prevTrack);
-    $("musicNext").addEventListener("click", nextTrack);
-    $("musicList").addEventListener("click", function (event) {
-      var item = event.target.closest("[data-index]");
-      if (!item) return;
-      startMusicTrack(parseInt(item.dataset.index, 10));
-    });
+
     $("soundVolume").addEventListener("input", function () {
       var value = parseInt(this.value, 10) || 0;
       state.settings.volume = value;
@@ -1133,51 +793,71 @@
       save();
     });
 
-    $("settingsBtn").addEventListener("click", openSettings);
-    $("settingsClose").addEventListener("click", closeSettings);
-    $("settingsBackdrop").addEventListener("click", closeSettings);
-    $("settingsSave").addEventListener("click", saveSettings);
+    $("openNeteaseBtn").addEventListener("click", openNeteasePlayer);
+
+    $("chatForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      var input = $("chatInput");
+      var value = input.value.trim();
+      if (!value) return;
+      sendChat(value);
+      input.value = "";
+    });
 
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);
     document.addEventListener("fullscreenchange", updateFullscreenIcon);
     document.addEventListener("visibilitychange", function () {
-      if (document.hidden && state.settings.strictMode && timer.running && timer.mode === "focus") {
+      if (document.hidden && state.settings.strictMode && timer.running) {
         pauseTimer();
         showToast("窗口已隐藏，专注计时已暂停", 2200);
       }
     });
 
-    $("statsReset").addEventListener("click", function () {
-      if (!window.confirm("确认清空全部学习数据？")) return;
-      state.stats = JSON.parse(JSON.stringify(DEFAULTS.stats));
-      save();
-      renderStats();
-      showToast("学习数据已清空", 1500);
+    ["setFocus", "setBreak", "setRounds"].forEach(function (id) {
+      $(id).addEventListener("change", saveSettings);
+    });
+    ["setAuto", "setStrict", "setTips"].forEach(function (id) {
+      $(id).addEventListener("change", saveSettings);
     });
 
-    document.addEventListener("keydown", function (event) {
-      if (event.key !== "Escape") return;
-      if (!$("settingsDialog").hidden) closeSettings();
-      if ($("soundDock").classList.contains("show")) toggleSoundDock(false);
-      if (document.body.classList.contains("focus-mode")) setFocusMode(false);
+    $("exportDataBtn").addEventListener("click", exportData);
+    $("importDataInput").addEventListener("change", function () {
+      importData(this.files && this.files[0]);
+      this.value = "";
+    });
+    $("resetDataBtn").addEventListener("click", function () {
+      if (!window.confirm("确认清空待办、学习数据与聊天记录？")) return;
+      state.todos = [];
+      state.stats = JSON.parse(JSON.stringify(DEFAULTS.stats));
+      state.chat = [];
+      save();
+      refreshAll();
+      showToast("本地数据已清空", 1600);
     });
   }
 
   function init() {
+    save();
     applyScene();
-    state.settings.sound = state.settings.sound || "rain";
+    document.body.classList.toggle("timer-type-simple", state.settings.timerType === "timer");
+    $("setFocus").value = state.settings.focusMin;
+    $("setBreak").value = state.settings.breakMin;
+    $("setRounds").value = state.settings.rounds;
+    $("setNetease").value = state.settings.neteaseId || "12275290957";
+    $("setAuto").checked = !!state.settings.autoBreak;
+    $("setStrict").checked = !!state.settings.strictMode;
+    $("setTips").checked = !!state.settings.showTips;
     $("soundVolume").value = state.settings.volume;
+    activeSound = "none";
     renderTimerUI();
     renderTasks();
     renderStats();
-    renderRoomStatus();
-    renderQuote();
-    renderMusicUI();
-    updateClock();
+    renderHint();
+    renderChat();
+    updateSoundButtons();
     bindEvents();
     refreshIcons();
-    setInterval(nextQuote, 30000);
-    setInterval(updateClock, 1000);
+    setInterval(nextHint, 30000);
   }
 
   init();

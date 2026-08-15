@@ -47,10 +47,10 @@ body.netease-panel-open .netease-float-btn {
   max-height: calc(100vh - 160px);
   overflow: auto;
   padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
-  background: rgba(17, 20, 28, 0.72);
-  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  background: rgba(23, 24, 31, 0.84);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(24px) saturate(160%);
   opacity: 0;
   visibility: hidden;

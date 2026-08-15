@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#151821">
-  <title>云上自习室 · Study Room</title>
+  <meta name="theme-color" content="#0b0c11">
+  <title>云上自习室 · Lo-Fi Study Room</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -20,234 +20,279 @@
 <body>
   <div class="room-bg" id="roomBg" aria-hidden="true"></div>
   <div class="room-overlay" aria-hidden="true"></div>
+  <div class="pixel-noise" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
 
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true">R</span>
-        <div class="brand-copy">
-          <h1>云上自习室</h1>
-          <span>Study Room</span>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">R</span>
+      <span>云上自习室</span>
+    </div>
+    <div class="nav-clock" aria-label="当前计时状态">
+      <span id="navMode">番茄钟</span>
+      <strong id="navTime">25:00</strong>
+      <span id="navStatus">等待开始</span>
+    </div>
+    <div class="top-actions">
+      <button id="fullscreenBtn" class="icon-btn" type="button" title="全屏" aria-label="全屏">
+        <i data-lucide="maximize-2"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="room-layout">
+    <div class="decor-room" aria-hidden="true">
+      <div class="crt-monitor">
+        <div class="crt-screen">
+          <span>STUDY ROOM</span>
+          <i></i>
         </div>
+        <div class="crt-stand"></div>
       </div>
-      <div class="top-actions">
-        <button id="focusModeBtn" class="icon-btn" type="button" title="沉浸模式" aria-label="沉浸模式" aria-pressed="false">
-          <i data-lucide="eye"></i>
+      <div class="speaker speaker-left"><span></span><span></span></div>
+      <div class="speaker speaker-right"><span></span><span></span></div>
+    </div>
+
+    <section class="app-modal" id="appModal" aria-label="自习室控制台">
+      <nav class="side-menu" aria-label="功能菜单">
+        <button class="active" type="button" data-view="focus">
+          <i data-lucide="timer"></i>
+          <span>番茄钟</span>
         </button>
-        <button id="soundBtn" class="icon-btn" type="button" title="氛围音" aria-label="氛围音" aria-pressed="false">
-          <i data-lucide="volume-2"></i>
+        <button type="button" data-view="tasks">
+          <i data-lucide="list-checks"></i>
+          <span>待办列表</span>
         </button>
-        <button id="settingsBtn" class="icon-btn" type="button" title="设置" aria-label="设置">
-          <i data-lucide="settings"></i>
+        <button type="button" data-view="music">
+          <i data-lucide="disc-3"></i>
+          <span>音乐设置</span>
         </button>
-        <button id="fullscreenBtn" class="icon-btn" type="button" title="全屏" aria-label="全屏">
-          <i data-lucide="maximize-2"></i>
+        <button type="button" data-view="chat">
+          <i data-lucide="messages-square"></i>
+          <span>聊天室</span>
         </button>
-      </div>
-    </header>
-
-    <main class="room-layout">
-      <section class="panel timer-panel" aria-label="番茄钟">
-        <div class="timer-ring" id="timerRing">
-          <div class="timer-glow" aria-hidden="true"></div>
-          <div class="timer-core">
-            <span class="eyebrow" id="modeBadge">专注</span>
-            <strong id="timeText">25:00</strong>
-            <span class="timer-round" id="roundText">第 1 / 4 轮</span>
-          </div>
-        </div>
-
-        <div class="mode-switch" role="tablist" aria-label="计时模式">
-          <button class="active" type="button" data-mode="focus" role="tab" aria-selected="true">专注</button>
-          <button type="button" data-mode="break" role="tab" aria-selected="false">休息</button>
-        </div>
-
-        <p class="timer-prompt" id="timerPrompt">开始认真学习/工作吧</p>
-
-        <div class="timer-controls">
-          <button id="primaryTimer" class="btn btn-primary" type="button">
-            <span>开始</span>
-            <i data-lucide="play"></i>
-          </button>
-          <button id="resetTimer" class="btn btn-icon" type="button" title="重置" aria-label="重置">
-            <i data-lucide="rotate-ccw"></i>
-          </button>
-          <button id="skipTimer" class="btn btn-icon" type="button" title="跳过" aria-label="跳过">
-            <i data-lucide="skip-forward"></i>
-          </button>
-        </div>
-        <button id="focusExitBtn" class="btn focus-exit" type="button" hidden>
-          <i data-lucide="arrow-left"></i>
-          <span>退出沉浸</span>
+        <button type="button" data-view="calendar">
+          <i data-lucide="calendar-days"></i>
+          <span>学习日历</span>
         </button>
+        <button type="button" data-view="cloud">
+          <i data-lucide="cloud"></i>
+          <span>云同步</span>
+        </button>
+        <button type="button" data-view="changelog">
+          <i data-lucide="scroll-text"></i>
+          <span>更新日志</span>
+        </button>
+        <button type="button" data-view="about">
+          <i data-lucide="info"></i>
+          <span>关于</span>
+        </button>
+      </nav>
 
-        <div class="session-track" aria-hidden="true">
-          <span id="sessionBar"></span>
-        </div>
-        <div class="session-stats">
-          <div class="session-chip">
-            <span>本次专注</span>
-            <strong id="sessionFocusText">00:00</strong>
+      <div class="modal-main">
+        <section class="view is-active" data-view="focus" id="viewFocus">
+          <div class="view-head">
+            <div class="segmented" role="tablist" aria-label="计时类型">
+              <button class="active" type="button" data-timer-type="pomodoro" role="tab" aria-selected="true">番茄钟</button>
+              <button type="button" data-timer-type="timer" role="tab" aria-selected="false">计时器</button>
+            </div>
+            <span class="mode-pill" id="modeBadge">专注</span>
           </div>
-          <div class="session-chip">
-            <span>已休息</span>
-            <strong id="sessionRestText">00:00</strong>
-          </div>
-        </div>
-      </section>
 
-      <section class="panel task-panel" aria-label="今日待办">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">TODAY</span>
-            <h2>今日待办</h2>
-          </div>
-          <span class="count-pill" id="taskCount">0</span>
-        </div>
-        <form id="taskForm" class="task-form">
-          <input id="taskInput" type="text" maxlength="42" placeholder="写下一件要完成的事" autocomplete="off">
-          <button class="btn btn-icon" type="submit" title="添加任务" aria-label="添加任务">
-            <i data-lucide="plus"></i>
-          </button>
-        </form>
-        <ul id="taskList" class="task-list" aria-label="任务列表"></ul>
-      </section>
-
-      <section class="panel stats-panel" aria-label="学习数据">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">FOCUS</span>
-            <h2>学习数据</h2>
-          </div>
-          <button id="statsReset" class="icon-btn small" type="button" title="清空数据" aria-label="清空数据">
-            <i data-lucide="trash-2"></i>
-          </button>
-        </div>
-        <div class="stat-grid">
-          <div class="stat-cell">
-            <span>今日</span>
-            <strong id="statToday">0m</strong>
-          </div>
-          <div class="stat-cell">
-            <span>累计</span>
-            <strong id="statTotal">0h</strong>
-          </div>
-          <div class="stat-cell">
-            <span>完成轮</span>
-            <strong id="statSessions">0</strong>
-          </div>
-          <div class="stat-cell">
-            <span>最长</span>
-            <strong id="statLongest">0m</strong>
-          </div>
-        </div>
-        <div class="week-heat" id="weekHeat" aria-label="最近七天专注时长"></div>
-      </section>
-
-      <section class="panel companion-panel" aria-label="学习陪伴">
-        <div class="companion-card">
-          <div class="companion-avatar" aria-hidden="true">
-            <span class="avatar-halo"></span>
-            <span class="avatar-face">R</span>
-          </div>
-          <div class="companion-copy">
-            <span class="eyebrow">ROOM MATE</span>
-            <h2>一起把这一页读完</h2>
-            <div class="quote-block" id="quoteBlock">
-              <p id="quoteText">把注意力放在眼前这一件事上。</p>
-              <button class="icon-btn small" id="quoteRefresh" type="button" title="换一句" aria-label="换一句">
-                <i data-lucide="refresh-cw"></i>
+          <div class="timer-stage">
+            <div class="timer-ring" id="timerRing">
+              <div class="ring-glow" aria-hidden="true"></div>
+              <div class="ring-core">
+                <strong id="timeText">25:00</strong>
+                <span id="roundText">第 1 / 4 轮</span>
+              </div>
+            </div>
+            <div class="timer-controls">
+              <button class="round-btn" id="resetTimer" type="button" title="重置" aria-label="重置">
+                <i data-lucide="rotate-ccw"></i>
+              </button>
+              <button class="play-btn" id="primaryTimer" type="button" title="开始 / 暂停" aria-label="开始 / 暂停">
+                <i data-lucide="play"></i>
+              </button>
+              <button class="round-btn" id="skipTimer" type="button" title="跳过" aria-label="跳过">
+                <i data-lucide="skip-forward"></i>
               </button>
             </div>
           </div>
-        </div>
-        <div class="focus-task-card">
-          <span class="card-label">当前目标</span>
-          <strong id="pinnedTask">还没有固定任务</strong>
-        </div>
-        <div class="members-card">
-          <div class="members-head">
-            <span>房间状态</span>
-            <strong id="roomStatus">本地专注</strong>
+
+          <div class="param-grid">
+            <label class="param-field">
+              <span>专注时间</span>
+              <input id="setFocus" type="number" min="1" max="120" value="25">
+            </label>
+            <label class="param-field break-field">
+              <span>休息时间</span>
+              <input id="setBreak" type="number" min="1" max="60" value="5">
+            </label>
+            <label class="param-field rounds-field">
+              <span>番茄个数</span>
+              <input id="setRounds" type="number" min="1" max="8" value="4">
+            </label>
           </div>
-          <div class="avatar-stack" id="avatarStack" aria-hidden="true"></div>
-        </div>
-      </section>
-    </main>
 
-    <footer class="statusbar">
-      <span>当前任务 <b id="statusTask">暂无</b></span>
-      <span id="sessionStatus">本次专注 00:00</span>
-      <span id="todayStatus">今日 0 分钟</span>
-      <span id="clockText">--:--</span>
-    </footer>
-  </div>
+          <div class="switch-stack">
+            <label class="toggle-row red">
+              <span>自动休息</span>
+              <input id="setAuto" type="checkbox" checked>
+            </label>
+            <label class="toggle-row red">
+              <span>严格模式</span>
+              <input id="setStrict" type="checkbox">
+            </label>
+            <label class="toggle-row red">
+              <span>显示一言</span>
+              <input id="setTips" type="checkbox" checked>
+            </label>
+          </div>
+        </section>
 
-  <aside class="sound-dock" id="soundDock" hidden aria-label="氛围音">
-    <div class="dock-head">
-      <span>氛围音</span>
-      <button class="icon-btn small" id="soundDockClose" type="button" aria-label="关闭">
-        <i data-lucide="x"></i>
-      </button>
-    </div>
-    <div class="sound-grid" id="soundGrid">
-      <button class="sound-option" type="button" data-sound="none">
-        <i data-lucide="volume-x"></i>
-        <span>静音</span>
-      </button>
-      <button class="sound-option" type="button" data-sound="rain">
-        <i data-lucide="cloud-rain"></i>
-        <span>雨声</span>
-      </button>
-      <button class="sound-option" type="button" data-sound="cafe">
-        <i data-lucide="coffee"></i>
-        <span>咖啡</span>
-      </button>
-      <button class="sound-option" type="button" data-sound="music">
-        <i data-lucide="disc-3"></i>
-        <span>音乐</span>
-      </button>
-      <button class="sound-option netease-option" type="button" data-sound="netease">
-        <i data-lucide="music-4"></i>
-        <span>网易云</span>
-      </button>
-    </div>
-    <div class="music-player" id="musicPlayer">
-      <div class="music-head">
-        <div class="now-playing">
-          <span class="music-state">音乐电台</span>
-          <strong id="musicTitle">晨光练习曲</strong>
-          <span id="musicArtist">云上电台</span>
-        </div>
-        <div class="music-controls">
-          <button class="icon-btn small" id="musicPrev" type="button" title="上一首" aria-label="上一首">
-            <i data-lucide="skip-back"></i>
-          </button>
-          <button class="icon-btn small music-play" id="musicToggle" type="button" title="播放 / 暂停" aria-label="播放 / 暂停">
-            <i data-lucide="play"></i>
-          </button>
-          <button class="icon-btn small" id="musicNext" type="button" title="下一首" aria-label="下一首">
-            <i data-lucide="skip-forward"></i>
-          </button>
-        </div>
+        <section class="view" data-view="tasks" id="viewTasks">
+          <div class="view-title">
+            <h2>待办列表</h2>
+            <span class="count-pill" id="taskCount">0</span>
+          </div>
+          <form id="taskForm" class="inline-form">
+            <input id="taskInput" type="text" maxlength="42" placeholder="写下下一件要完成的事" autocomplete="off">
+            <button class="icon-btn green" type="submit" title="添加任务" aria-label="添加任务">
+              <i data-lucide="plus"></i>
+            </button>
+          </form>
+          <ul id="taskList" class="task-list" aria-label="任务列表"></ul>
+          <div class="pinned-card">
+            <span>当前目标</span>
+            <strong id="pinnedTask">还没有固定任务</strong>
+          </div>
+        </section>
+
+        <section class="view" data-view="music" id="viewMusic">
+          <div class="view-title">
+            <h2>音乐设置</h2>
+            <span class="status-pill green">音乐台</span>
+          </div>
+          <div class="music-card">
+            <span class="section-label">网易云歌单</span>
+            <div class="inline-form">
+              <input id="setNetease" type="text" inputmode="url" placeholder="网易云歌单 ID 或链接" autocomplete="off">
+              <button class="btn green" id="openNeteaseBtn" type="button">打开播放器</button>
+            </div>
+            <p class="mini-note" id="neteaseStatus">绑定歌单后，按 M 键展开右侧播放器。</p>
+          </div>
+          <div class="ambient-card">
+            <span class="section-label">氛围音</span>
+            <div class="sound-grid" id="soundGrid">
+              <button class="active" type="button" data-sound="none">无声</button>
+              <button type="button" data-sound="rain">雨声</button>
+              <button type="button" data-sound="cafe">咖啡馆</button>
+            </div>
+          </div>
+          <label class="volume-row" for="soundVolume">
+            <span>音量</span>
+            <input id="soundVolume" type="range" min="0" max="100" value="55">
+          </label>
+        </section>
+
+        <section class="view" data-view="chat" id="viewChat">
+          <div class="view-title">
+            <h2>聊天室</h2>
+            <span class="status-pill"><i class="online-dot"></i>本地在线</span>
+          </div>
+          <div class="chat-log" id="chatLog" aria-live="polite"></div>
+          <form id="chatForm" class="inline-form">
+            <input id="chatInput" type="text" maxlength="80" placeholder="说点什么..." autocomplete="off">
+            <button class="icon-btn green" type="submit" title="发送" aria-label="发送">
+              <i data-lucide="send"></i>
+            </button>
+          </form>
+        </section>
+
+        <section class="view" data-view="calendar" id="viewCalendar">
+          <div class="view-title">
+            <h2>学习日历</h2>
+            <span class="count-pill">7 DAYS</span>
+          </div>
+          <div class="stats-row">
+            <div class="stat-cell"><span>今日</span><strong id="statToday">0m</strong></div>
+            <div class="stat-cell"><span>累计</span><strong id="statTotal">0h</strong></div>
+            <div class="stat-cell"><span>完成轮</span><strong id="statSessions">0</strong></div>
+            <div class="stat-cell"><span>最长</span><strong id="statLongest">0m</strong></div>
+          </div>
+          <div class="heat-card">
+            <span class="section-label">最近七天专注热度</span>
+            <div class="week-heat" id="weekHeat" aria-label="最近七天专注时长"></div>
+          </div>
+        </section>
+
+        <section class="view" data-view="cloud" id="viewCloud">
+          <div class="view-title">
+            <h2>云同步</h2>
+            <span class="status-pill green">Local-first</span>
+          </div>
+          <div class="sync-card">
+            <i data-lucide="cloud"></i>
+            <div>
+              <strong>本地持久化</strong>
+              <span>所有数据保存在浏览器 localStorage，不依赖后端。</span>
+            </div>
+            <span class="sync-state">已连接</span>
+          </div>
+          <div class="sync-actions">
+            <button class="btn ghost" id="exportDataBtn" type="button">导出备份</button>
+            <label class="btn ghost" for="importDataInput">
+              导入备份
+              <input id="importDataInput" type="file" accept=".json,application/json" hidden>
+            </label>
+            <button class="btn danger" id="resetDataBtn" type="button">清空数据</button>
+          </div>
+        </section>
+
+        <section class="view" data-view="changelog" id="viewChangelog">
+          <div class="view-title">
+            <h2>更新日志</h2>
+            <span class="count-pill">v2.0</span>
+          </div>
+          <ol class="changelog-list">
+            <li>
+              <time>2026-08-15</time>
+              <strong>v2.0 Lo-Fi 重构</strong>
+              <p>暗黑 Lo-Fi 视觉、中央控制台、左侧菜单、番茄钟与计时器双模式。</p>
+            </li>
+            <li>
+              <time>2026-08-10</time>
+              <strong>v1.2 音乐播放器</strong>
+              <p>接入 APlayer 与 MetingJS，支持网易云歌单播放。</p>
+            </li>
+            <li>
+              <time>2026-08-01</time>
+              <strong>v1.0 自习室上线</strong>
+              <p>专注计时、待办列表、学习数据与沉浸模式。</p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="view" data-view="about" id="viewAbout">
+          <div class="about-card">
+            <span class="brand-mark large" aria-hidden="true">R</span>
+            <h2>云上自习室</h2>
+            <p>一款暗黑 Lo-Fi 风格的本地专注工具，把番茄钟、待办、音乐与学习日历放进一间安静的深夜房间。</p>
+            <div class="about-meta">
+              <span>Version 2.0</span>
+              <span>Local-first</span>
+              <span>Study Room</span>
+            </div>
+          </div>
+        </section>
       </div>
-      <div class="music-progress">
-        <span id="musicElapsed">00:00</span>
-        <div class="progress-track" aria-hidden="true">
-          <span id="musicProgressBar"></span>
-        </div>
-        <span id="musicDuration">01:00</span>
-      </div>
-      <div class="music-lyrics" id="musicLyrics" aria-live="polite">
-        <span class="lyric-line" id="musicLyricText">选择一首歌，开始今天的节奏。</span>
-      </div>
-      <ul class="music-list" id="musicList"></ul>
-    </div>
-    <label class="volume-row" for="soundVolume">
-      <i data-lucide="volume-2"></i>
-      <input id="soundVolume" type="range" min="0" max="100" value="55">
-    </label>
-  </aside>
+    </section>
+  </main>
+
+  <footer class="bottom-hint">
+    <span id="hintText">把注意力放在眼前这一件事上。</span>
+  </footer>
 
   <button class="netease-float-btn" id="neteaseFloatBtn" type="button" aria-label="网易云音乐播放器" aria-expanded="false" title="网易云音乐播放器">
     <i data-lucide="music"></i>
@@ -265,54 +310,6 @@
     </div>
     <div class="netease-stage" id="neteaseStage"></div>
   </aside>
-
-  <div class="settings-dialog" id="settingsDialog" hidden role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-    <button class="dialog-backdrop" id="settingsBackdrop" type="button" aria-label="关闭设置"></button>
-    <div class="settings-panel">
-      <div class="panel-head">
-        <div>
-          <span class="eyebrow">SETTINGS</span>
-          <h2 id="settingsTitle">自习室设置</h2>
-        </div>
-        <button class="icon-btn small" id="settingsClose" type="button" aria-label="关闭">
-          <i data-lucide="x"></i>
-        </button>
-      </div>
-      <div class="settings-grid">
-        <label class="setting-field">
-          <span>专注时长</span>
-          <input id="setFocus" type="number" min="1" max="120" value="25">
-        </label>
-        <label class="setting-field">
-          <span>休息时长</span>
-          <input id="setBreak" type="number" min="1" max="60" value="5">
-        </label>
-        <label class="setting-field">
-          <span>长休间隔</span>
-          <input id="setRounds" type="number" min="1" max="8" value="4">
-        </label>
-        <label class="setting-field">
-          <span>网易云音乐</span>
-          <input id="setNetease" type="text" inputmode="url" placeholder="网易云歌单 ID 或链接" autocomplete="off">
-        </label>
-      </div>
-      <label class="switch-row" for="setAuto">
-        <span>自动切换休息</span>
-        <input id="setAuto" type="checkbox" checked>
-      </label>
-      <label class="switch-row" for="setStrict">
-        <span>离开页面自动暂停</span>
-        <input id="setStrict" type="checkbox">
-      </label>
-      <label class="switch-row" for="setTips">
-        <span>显示一言 Tips</span>
-        <input id="setTips" type="checkbox" checked>
-      </label>
-      <div class="dialog-actions">
-        <button class="btn btn-primary" id="settingsSave" type="button">保存设置</button>
-      </div>
-    </div>
-  </div>
 
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 </body>

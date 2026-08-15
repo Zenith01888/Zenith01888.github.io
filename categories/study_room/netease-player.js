@@ -5,7 +5,7 @@
   // 例如歌单链接 https://music.163.com/#/playlist?id=12275290957 中的 12275290957。
   var DEFAULT_PLAYLIST_ID = "12275290957";
 
-  var STORAGE_KEY = "zenith-study-room-v1";
+  var STORAGE_KEY = "zenith-study-room-v2";
   var PANEL_OPEN_CLASS = "netease-panel-open";
 
   var button = null;
@@ -34,7 +34,7 @@
       return normalizePlaylistId(input.value, DEFAULT_PLAYLIST_ID);
     }
     try {
-      var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("zenith-study-room-v1") || "null");
       if (data && data.settings && data.settings.neteaseId) {
         return normalizePlaylistId(data.settings.neteaseId, DEFAULT_PLAYLIST_ID);
       }
