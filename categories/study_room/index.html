@@ -25,8 +25,10 @@
 
   <header class="topbar" id="topbar" aria-expanded="true">
     <button class="nav-ghost-btn" id="toggleConsoleBtn" type="button" title="切换控制台" aria-label="切换控制台">切换</button>
-    <div class="header-clock" aria-label="番茄钟计时">
-      <span id="headerClock">--:--:--</span>
+    <div class="header-clock" aria-label="番茄钟计时和现在时间">
+      <span id="headerClock">25:00</span>
+      <span class="header-clock-divider" aria-hidden="true"></span>
+      <time id="headerNow">--:--</time>
     </div>
     <button class="nav-ghost-btn" id="fullscreenBtn" type="button" title="全屏" aria-label="全屏">全屏</button>
   </header>

@@ -775,8 +775,11 @@
   }
 
   function updateClock() {
-    var now = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+    var date = new Date();
+    var now = date.toLocaleTimeString("zh-CN", { hour12: false });
+    var nowShort = date.toLocaleTimeString("zh-CN", { hour12: false, hour: "2-digit", minute: "2-digit" });
     if ($("panelClock")) $("panelClock").textContent = now;
+    if ($("headerNow")) $("headerNow").textContent = nowShort;
   }
 
   function updateFullscreenIcon() {
