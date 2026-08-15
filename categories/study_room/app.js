@@ -90,6 +90,7 @@
   var ambientTimers = [];
   var quoteIndex = Math.floor(Math.random() * QUOTES.length);
   var chatReplyIndex = 0;
+  var mouseIdleTimer = null;
 
   function save() {
     try {
@@ -177,6 +178,7 @@
     }
     timer.total = modeSeconds(timer.mode);
     $("timeText").textContent = fmtTime(timer.remaining);
+    if ($("headerClock")) $("headerClock").textContent = fmtTime(timer.remaining);
     $("modeBadge").textContent = MODE_LABELS[timer.mode] || "专注";
 
     var cycle = timer.mode === "focus"
@@ -345,13 +347,16 @@
   }
 
   function renderTodoStrip() {
-    var strip = $("todoStripItems");
-    if (!strip) return;
+    var strip = $("todoStrip");
+    var list = $("todoStripItems");
+    if (!strip || !list) return;
     if (!state.todos.length) {
-      strip.innerHTML = '<span class="todo-empty">还没有待办事项</span>';
+      strip.hidden = true;
+      list.innerHTML = "";
       return;
     }
-    strip.innerHTML = state.todos.map(function (task) {
+    strip.hidden = false;
+    list.innerHTML = state.todos.map(function (task) {
       var classes = ["todo-chip"];
       if (task.done) classes.push("done");
       if (task.pinned) classes.push("pinned");
@@ -761,10 +766,16 @@
       document.exitFullscreen();
     }
   }
+  function wakeNav() {
+    document.body.classList.remove("mouse-idle");
+    if (mouseIdleTimer) clearTimeout(mouseIdleTimer);
+    mouseIdleTimer = setTimeout(function () {
+      document.body.classList.add("mouse-idle");
+    }, 2600);
+  }
 
   function updateClock() {
     var now = new Date().toLocaleTimeString("zh-CN", { hour12: false });
-    if ($("headerClock")) $("headerClock").textContent = now;
     if ($("panelClock")) $("panelClock").textContent = now;
   }
 
@@ -878,6 +889,13 @@
     $("toggleConsoleBtn").addEventListener("click", toggleConsole);
 
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);
+    ["mousemove", "pointerdown", "keydown", "touchstart"].forEach(function (type) {
+      document.addEventListener(type, wakeNav, { passive: true });
+    });
+    document.addEventListener("mouseleave", function () {
+      if (mouseIdleTimer) clearTimeout(mouseIdleTimer);
+      document.body.classList.add("mouse-idle");
+    });
     document.addEventListener("fullscreenchange", updateFullscreenIcon);
     document.addEventListener("visibilitychange", function () {
       if (document.hidden && state.settings.strictMode && timer.running) {
@@ -912,6 +930,7 @@
   function init() {
     save();
     applyScene();
+    document.body.classList.add("mouse-idle");
     document.body.classList.toggle("timer-type-simple", state.settings.timerType === "timer");
     $("setFocus").value = state.settings.focusMin;
     $("setBreak").value = state.settings.breakMin;

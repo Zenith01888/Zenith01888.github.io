@@ -276,7 +276,7 @@ button:disabled {
   transition: opacity 220ms ease, transform 220ms var(--ease-out), visibility 0s linear 220ms, background 150ms ease, box-shadow 150ms ease;
 }
 
-body:hover .nav-ghost-btn {
+body:not(.mouse-idle) .nav-ghost-btn {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -284,30 +284,39 @@ body:hover .nav-ghost-btn {
   transition: opacity 220ms ease, transform 220ms var(--ease-out), visibility 0s, background 150ms ease, box-shadow 150ms ease;
 }
 
-body:hover .nav-ghost-btn:hover {
+body:not(.mouse-idle) .nav-ghost-btn:hover {
   background: rgba(255, 255, 255, 0.16);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.mouse-idle .nav-ghost-btn {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(4px);
 }
 
 .header-clock {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  padding: 7px 13px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 8px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(14px) saturate(140%);
-  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px) saturate(150%);
+  color: rgba(255, 255, 255, 0.94);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 15px;
+  font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
 }
 
 @media (hover: none) {
-  .nav-ghost-btn {
+  .nav-ghost-btn,
+  body.mouse-idle .nav-ghost-btn {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -317,19 +326,23 @@ body:hover .nav-ghost-btn:hover {
 
 .todo-strip {
   position: fixed;
-  top: 58px;
-  left: 0;
-  right: 0;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 19;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  height: 38px;
-  padding: 0 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 11, 15, 0.6);
-  backdrop-filter: blur(16px) saturate(140%);
-  overflow: hidden;
+  gap: 6px;
+  width: auto;
+  min-width: 220px;
+  max-width: min(520px, calc(100vw - 24px));
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px) saturate(150%);
 }
 
 .todo-strip-label {
@@ -348,11 +361,13 @@ body:hover .nav-ghost-btn:hover {
 
 .todo-strip-items {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  width: 100%;
   min-width: 0;
-  flex: 1;
-  overflow-x: auto;
+  max-height: 118px;
+  overflow-y: auto;
   scrollbar-width: none;
 }
 
@@ -361,14 +376,15 @@ body:hover .nav-ghost-btn:hover {
 }
 
 .todo-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  max-width: 230px;
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid var(--line);
+  width: 100%;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--ink-2);
   cursor: pointer;
   white-space: nowrap;
@@ -1493,7 +1509,7 @@ body.timer-type-simple .toggle-row:first-child {
   }
 
   .header-clock {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .topbar {
@@ -1502,9 +1518,10 @@ body.timer-type-simple .toggle-row:first-child {
   }
 
   .todo-strip {
-    top: 54px;
-    height: 36px;
-    padding: 0 10px;
+    top: 60px;
+    min-width: 190px;
+    padding: 8px 10px;
+    border-radius: 14px;
   }
 
   .room-layout {

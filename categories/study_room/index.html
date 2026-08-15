@@ -17,7 +17,7 @@
   <script async src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
   <script async src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
 </head>
-<body>
+<body class="mouse-idle">
   <div class="room-bg" id="roomBg" aria-hidden="true"></div>
   <div class="room-overlay" aria-hidden="true"></div>
   <div class="pixel-noise" aria-hidden="true"></div>
@@ -25,13 +25,13 @@
 
   <header class="topbar" id="topbar" aria-expanded="true">
     <button class="nav-ghost-btn" id="toggleConsoleBtn" type="button" title="切换控制台" aria-label="切换控制台">切换</button>
-    <div class="header-clock" aria-label="现在时间">
+    <div class="header-clock" aria-label="番茄钟计时">
       <span id="headerClock">--:--:--</span>
     </div>
     <button class="nav-ghost-btn" id="fullscreenBtn" type="button" title="全屏" aria-label="全屏">全屏</button>
   </header>
 
-  <div class="todo-strip" id="todoStrip">
+  <div class="todo-strip" id="todoStrip" hidden>
     <span class="todo-strip-label">
       <i data-lucide="list-checks"></i>
       <span>待办</span>
