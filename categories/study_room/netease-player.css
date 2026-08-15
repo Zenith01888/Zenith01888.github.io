@@ -42,7 +42,7 @@ body.netease-panel-open .netease-float-btn {
   border-color: rgba(56, 217, 192, 0.5);
 }
 
-body:hover .netease-float-btn,
+body:not(.mouse-idle) .netease-float-btn,
 body.netease-panel-open .netease-float-btn {
   opacity: 1;
   visibility: visible;
@@ -51,9 +51,15 @@ body.netease-panel-open .netease-float-btn {
   transition: opacity 220ms ease, transform 220ms var(--ease-out), visibility 0s, color 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
-body:hover .netease-float-btn:hover,
+body:not(.mouse-idle) .netease-float-btn:hover,
 body.netease-panel-open .netease-float-btn:hover {
   transform: translateY(-2px);
+}
+body.mouse-idle .netease-float-btn {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(4px);
 }
 
 .netease-panel {
@@ -303,7 +309,8 @@ body.netease-panel-open .netease-panel {
 }
 
 @media (hover: none) {
-  .netease-float-btn {
+  .netease-float-btn,
+  body.mouse-idle .netease-float-btn {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
