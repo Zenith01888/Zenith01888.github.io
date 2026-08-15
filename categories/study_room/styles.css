@@ -85,6 +85,49 @@ button:disabled {
   pointer-events: none;
 }
 
+.room-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(5, 7, 11, 0.58), rgba(5, 7, 11, 0.34) 46%, rgba(5, 7, 11, 0.66));
+  pointer-events: none;
+}
+
+.room-wordmark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 21;
+  transform: translate(-50%, calc(-50% + 8px));
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5.2vw, 54px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 4px 26px rgba(0, 0, 0, 0.48), 0 0 34px rgba(143, 203, 255, 0.14);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 360ms ease, transform 360ms var(--ease-out), visibility 0s linear 360ms;
+}
+
+body:not(.mouse-idle) .room-wordmark {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%);
+  transition: opacity 360ms ease, transform 360ms var(--ease-out), visibility 0s;
+}
+
+body.mouse-idle .room-wordmark {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, calc(-50% + 8px));
+}
+
 .icon-btn,
 .btn,
 .round-btn,
