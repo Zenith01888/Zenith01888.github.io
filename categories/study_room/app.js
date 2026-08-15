@@ -707,6 +707,12 @@
     if (name === "chat") renderChat();
   }
 
+  function toggleConsole() {
+    var closed = document.body.classList.toggle("console-closed");
+    var bar = $("topbar");
+    if (bar) bar.setAttribute("aria-expanded", closed ? "false" : "true");
+  }
+
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
@@ -802,6 +808,11 @@
       if (!value) return;
       sendChat(value);
       input.value = "";
+    });
+
+    $("topbar").addEventListener("click", function (event) {
+      if (event.target.closest("button")) return;
+      toggleConsole();
     });
 
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);

@@ -91,6 +91,7 @@ button:disabled {
   background-position: center;
   filter: brightness(0.62) saturate(0.78) contrast(1.06);
   transform: scale(1.05);
+  transition: filter 500ms var(--ease-out), transform 500ms var(--ease-out);
 }
 
 .room-overlay {
@@ -98,6 +99,7 @@ button:disabled {
   background:
     linear-gradient(180deg, rgba(5, 6, 9, 0.72), rgba(7, 8, 12, 0.62) 48%, rgba(5, 6, 9, 0.86)),
     rgba(8, 9, 13, 0.38);
+  transition: background 500ms var(--ease-out);
 }
 
 .pixel-noise {
@@ -116,6 +118,7 @@ button:disabled {
     transparent 1px,
     transparent 3px
   );
+  transition: opacity 500ms var(--ease-out);
 }
 
 .icon-btn,
@@ -195,6 +198,7 @@ button:disabled {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(10, 11, 15, 0.72);
   backdrop-filter: blur(18px) saturate(150%);
+  cursor: pointer;
 }
 
 .brand {
@@ -361,6 +365,30 @@ button:disabled {
   background: var(--panel);
   box-shadow: var(--modal-shadow);
   backdrop-filter: blur(20px);
+  transition: opacity 220ms ease, transform 320ms var(--ease-out), visibility 0s linear 220ms;
+}
+
+body.console-closed .app-modal {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(0.985);
+  pointer-events: none;
+}
+
+body.console-closed .room-bg {
+  filter: brightness(0.9) saturate(0.96) contrast(1.02);
+  transform: scale(1.02);
+}
+
+body.console-closed .room-overlay {
+  background:
+    linear-gradient(180deg, rgba(5, 6, 9, 0.34), rgba(7, 8, 12, 0.18) 48%, rgba(5, 6, 9, 0.5)),
+    rgba(8, 9, 13, 0.12);
+}
+
+body.console-closed .scanlines,
+body.console-closed .pixel-noise {
+  opacity: 0.35;
 }
 
 .side-menu {
