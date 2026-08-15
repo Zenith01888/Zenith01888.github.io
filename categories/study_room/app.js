@@ -21,9 +21,6 @@
   };
   var SCENES = {
     p1: { type: "image", src: "assets/p1.webp", label: "P1 图片" },
-    p2: { type: "image", src: "assets/p2.webp", label: "P2 图片" },
-    m1: { type: "video", src: "assets/m1.mp4", label: "M1 动态" },
-    m2: { type: "video", src: "assets/m2.mp4", label: "M2 动态" },
   };
 
   var DEFAULTS = {
@@ -36,6 +33,8 @@
       sound: "rain",
       volume: 55,
       autoBreak: true,
+      neteaseId: "12275290957",
+      neteaseType: 0,
     },
     todos: [],
     stats: {
@@ -147,41 +146,9 @@
     if (!SCENES[scene]) scene = "p1";
     state.settings.scene = scene;
     document.documentElement.dataset.scene = scene;
-
     var cfg = SCENES[scene];
     var bg = $("roomBg");
-    var video = $("roomVideo");
-    var sceneSelect = $("setScene");
-    if (sceneSelect) sceneSelect.value = scene;
-
-    if (cfg.type === "video") {
-      document.body.dataset.media = "video";
-      video.muted = true;
-      video.loop = true;
-      video.src = cfg.src;
-      video.load();
-      video.play().catch(function () {
-        // Autoplay may be blocked until the user interacts.
-      });
-    } else {
-      document.body.dataset.media = "image";
-      if (video) {
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
-      }
-      if (bg) bg.style.backgroundImage = 'url("' + cfg.src + '")';
-    }
-  }
-
-  function cycleScene() {
-    var keys = Object.keys(SCENES);
-    var index = keys.indexOf(state.settings.scene);
-    var next = keys[(index + 1) % keys.length];
-    state.settings.scene = next;
-    applyScene();
-    save();
-    showToast(SCENES[next].label + " 已切换", 1200);
+    if (bg) bg.style.backgroundImage = 'url("' + cfg.src + '")';
   }
 
   function renderTimerUI() {
@@ -461,9 +428,55 @@
     });
     activeNodes = [];
     activeSound = "none";
+    hideNeteasePlayer();
     $("soundBtn").classList.remove("active");
     $("soundBtn").setAttribute("aria-pressed", "false");
     updateSoundButtons();
+  }
+
+  function hideNeteasePlayer() {
+    var player = $("neteasePlayer");
+    var frame = $("neteaseIframe");
+    if (player) player.hidden = true;
+    if (frame) frame.src = "about:blank";
+    document.body.classList.remove("netease-active");
+  }
+
+  function parseNeteaseId(value) {
+    var text = String(value || "").trim();
+    var id = state.settings.neteaseId || "12275290957";
+    var type = state.settings.neteaseType || 0;
+    var urlMatch = text.match(/id=(\d+)/i);
+    var directMatch = text.match(/^\d+$/);
+    if (urlMatch) {
+      id = urlMatch[1];
+    } else if (directMatch) {
+      id = directMatch[0];
+    } else if (text) {
+      id = "12275290957";
+    }
+    if (/playlist/i.test(text)) type = 0;
+    else if (/song/i.test(text)) type = 2;
+    else if (/album/i.test(text)) type = 1;
+    else if (/djradio/i.test(text)) type = 3;
+    return { id: id, type: type };
+  }
+
+  function loadNeteasePlayer() {
+    var parsed = parseNeteaseId(state.settings.neteaseId);
+    state.settings.neteaseId = parsed.id;
+    state.settings.neteaseType = parsed.type;
+    var frame = $("neteaseIframe");
+    var player = $("neteasePlayer");
+    var height = parsed.type === 0 ? 430 : parsed.type === 3 ? 330 : 86;
+    if (frame) {
+      frame.style.height = height + "px";
+      frame.src = "https://music.163.com/outchain/player?type=" + parsed.type +
+        "&id=" + parsed.id + "&auto=1&height=" + height;
+    }
+    if (player) player.hidden = false;
+    document.body.classList.add("netease-active");
+    save();
   }
 
   function makeNoiseBuffer(ctx, seconds) {
@@ -578,6 +591,17 @@
       save();
       return;
     }
+    if (type === "netease") {
+      stopSound();
+      activeSound = "netease";
+      loadNeteasePlayer();
+      state.settings.sound = "netease";
+      save();
+      $("soundBtn").classList.add("active");
+      $("soundBtn").setAttribute("aria-pressed", "true");
+      updateSoundButtons();
+      return;
+    }
     var ctx = ensureAudio();
     if (!ctx) return;
     stopSound();
@@ -644,7 +668,7 @@
     $("setFocus").value = state.settings.focusMin;
     $("setBreak").value = state.settings.breakMin;
     $("setRounds").value = state.settings.rounds;
-    $("setScene").value = state.settings.scene;
+    $("setNetease").value = state.settings.neteaseId || "12275290957";
     $("setAuto").checked = !!state.settings.autoBreak;
     $("settingsDialog").hidden = false;
   }
@@ -660,10 +684,12 @@
     state.settings.focusMin = focus;
     state.settings.breakMin = breakMin;
     state.settings.rounds = rounds;
-    state.settings.scene = $("setScene").value;
+    var netease = parseNeteaseId($("setNetease").value);
+    state.settings.neteaseId = netease.id;
+    state.settings.neteaseType = netease.type;
     state.settings.autoBreak = $("setAuto").checked;
-    applyScene();
     save();
+    if (activeSound === "netease") loadNeteasePlayer();
     if (!timer.running) {
       timer.remaining = modeSeconds(timer.mode);
       timer.total = modeSeconds(timer.mode);
@@ -754,7 +780,6 @@
     $("soundBtn").addEventListener("click", function () {
       toggleSoundDock();
     });
-    $("sceneBtn").addEventListener("click", cycleScene);
     $("soundDockClose").addEventListener("click", function () {
       toggleSoundDock(false);
     });

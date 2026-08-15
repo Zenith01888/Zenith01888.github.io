@@ -27,4 +27,4 @@ python -m http.server 8080
 - `categories/pdf-merge/` 是 PDF 合并工具的生产构建产物；更新工具时在 `pdf_merge` 项目根目录运行 `npm run build -- --base=./`，再替换该目录。
 - `categories/pwm_monitor/` 是 PWM 监控工具页面，包含 Web Serial 串口读取、三通道频率与占空比统计、Excel 导出和自动保存。
 - `categories/app_Oscilloscope/` 是示波器 Web 上位机源码与说明页；`categories/app_Oscilloscope/web/` 是可在 GitHub Pages 打开的浏览器演示版，连接真实示波器时仍需本地运行 Flask 应用。
-- `categories/study_room/` 是云上自习室页面，包含番茄钟、待办、学习统计、氛围音、沉浸模式与全屏模式。
+- `categories/study_room/` 是云上自习室页面，包含番茄钟、待办、学习统计、氛围音（含网易云音乐）、沉浸模式与全屏模式。

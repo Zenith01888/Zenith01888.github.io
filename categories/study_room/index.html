@@ -15,7 +15,6 @@
 </head>
 <body>
   <div class="room-bg" id="roomBg" aria-hidden="true"></div>
-  <video class="room-video" id="roomVideo" muted loop playsinline aria-hidden="true"></video>
   <div class="room-overlay" aria-hidden="true"></div>
 
   <div class="app-shell">
@@ -33,9 +32,6 @@
         </button>
         <button id="soundBtn" class="icon-btn" type="button" title="氛围音" aria-label="氛围音" aria-pressed="false">
           <i data-lucide="volume-2"></i>
-        </button>
-        <button id="sceneBtn" class="icon-btn" type="button" title="切换背景" aria-label="切换背景">
-          <i data-lucide="image"></i>
         </button>
         <button id="settingsBtn" class="icon-btn" type="button" title="设置" aria-label="设置">
           <i data-lucide="settings"></i>
@@ -189,6 +185,15 @@
         <i data-lucide="music-4"></i>
         <span>Lo-fi</span>
       </button>
+      <button class="sound-option netease-option" type="button" data-sound="netease">
+        <i data-lucide="music-4"></i>
+        <span>网易云</span>
+      </button>
+    </div>
+    <div class="netease-player" id="neteasePlayer" hidden>
+      <div class="netease-frame">
+        <iframe id="neteaseIframe" title="网易云音乐" loading="lazy" allow="autoplay" referrerpolicy="no-referrer"></iframe>
+      </div>
     </div>
     <label class="volume-row" for="soundVolume">
       <i data-lucide="volume-2"></i>
@@ -221,15 +226,10 @@
           <span>长休间隔</span>
           <input id="setRounds" type="number" min="1" max="8" value="4">
         </label>
-          <label class="setting-field">
-            <span>场景</span>
-            <select id="setScene">
-              <option value="p1">P1 图片</option>
-              <option value="p2">P2 图片</option>
-              <option value="m1">M1 动态</option>
-              <option value="m2">M2 动态</option>
-            </select>
-          </label>
+        <label class="setting-field">
+          <span>网易云音乐</span>
+          <input id="setNetease" type="text" inputmode="url" placeholder="歌单 / 歌曲 ID 或链接" autocomplete="off">
+        </label>
       </div>
       <label class="switch-row" for="setAuto">
         <span>自动切换休息</span>

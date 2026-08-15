@@ -135,6 +135,100 @@ def draw_lab_cover(draw, width, height):
     draw.line((width * 0.1, height * 0.82, width * 0.9, height * 0.82), fill=alpha(AMBER, 150), width=4)
 
 
+def draw_study_room_cover(draw, width, height):
+    window = (width * 0.055, height * 0.075, width * 0.43, height * 0.925)
+    draw.rounded_rectangle(
+        window,
+        radius=width * 0.018,
+        fill=alpha(CREAM, 14),
+        outline=alpha(CREAM, 70),
+        width=4,
+    )
+    draw.line(
+        (width * 0.2425, window[1], width * 0.2425, window[3]),
+        fill=alpha(CREAM, 55),
+        width=4,
+    )
+    draw.line(
+        (window[0], height * 0.5, window[2], height * 0.5),
+        fill=alpha(CREAM, 55),
+        width=4,
+    )
+
+    cx = width * 0.2425
+    cy = height * 0.5
+    radius = height * 0.21
+    ring = (cx - radius, cy - radius, cx + radius, cy + radius)
+    draw.arc(ring, start=-90, end=90, fill=alpha(TEAL, 255), width=14)
+    draw.ellipse(ring, outline=alpha(CREAM, 130), width=6)
+
+    inner = (cx - radius * 0.72, cy - radius * 0.72, cx + radius * 0.72, cy + radius * 0.72)
+    draw.ellipse(inner, fill=BG[:3] + (230,), outline=alpha(CREAM, 60), width=3)
+    draw.line((cx, cy, cx, cy - radius * 0.72), fill=alpha(AMBER, 255), width=8)
+    draw.line((cx, cy, cx + radius * 0.52, cy + radius * 0.16), fill=alpha(AMBER, 255), width=8)
+    draw.ellipse((cx - 14, cy - 14, cx + 14, cy + 14), fill=alpha(TEAL, 255))
+
+    track = (
+        window[0] + width * 0.025,
+        height * 0.865,
+        window[2] - width * 0.025,
+        height * 0.895,
+    )
+    draw.rounded_rectangle(track, radius=10, fill=alpha(CREAM, 40))
+    progress = (track[0], track[1], track[0] + (track[2] - track[0]) * 0.38, track[3])
+    draw.rounded_rectangle(progress, radius=10, fill=alpha(TEAL, 240))
+
+    panel = (width * 0.5, height * 0.1, width * 0.95, height * 0.9)
+    draw.rounded_rectangle(
+        panel,
+        radius=width * 0.014,
+        fill=alpha(CREAM, 16),
+        outline=alpha(CREAM, 70),
+        width=4,
+    )
+    draw.rounded_rectangle(
+        (panel[0] + width * 0.035, panel[1] + height * 0.045, panel[0] + width * 0.16, panel[1] + height * 0.105),
+        radius=10,
+        fill=alpha(CORAL, 235),
+    )
+
+    row_colors = (TEAL, AMBER, CORAL)
+    for index, color in enumerate(row_colors):
+        row_y = panel[1] + height * (0.16 + index * 0.15)
+        row_h = height * 0.09
+        draw.rounded_rectangle(
+            (panel[0] + width * 0.04, row_y, panel[2] - width * 0.04, row_y + row_h),
+            radius=14,
+            fill=alpha(CREAM, 30),
+            outline=alpha(CREAM, 45),
+            width=2,
+        )
+        check_cx = panel[0] + width * 0.07
+        check_cy = row_y + row_h / 2
+        check_r = height * 0.032
+        draw.ellipse(
+            (check_cx - check_r, check_cy - check_r, check_cx + check_r, check_cy + check_r),
+            outline=alpha(color, 255),
+            width=5,
+        )
+        draw.line(
+            (panel[0] + width * 0.1, check_cy, panel[2] - width * 0.05, check_cy),
+            fill=alpha(CREAM, 100),
+            width=4,
+        )
+
+    for index, color in enumerate(row_colors):
+        avatar_r = height * 0.032
+        avatar_cx = panel[0] + width * (0.11 + index * 0.07)
+        avatar_cy = panel[3] - height * 0.075
+        draw.ellipse(
+            (avatar_cx - avatar_r, avatar_cy - avatar_r, avatar_cx + avatar_r, avatar_cy + avatar_r),
+            fill=alpha(color, 230),
+            outline=alpha(CREAM, 120),
+            width=3,
+        )
+
+
 def make_favicon():
     size = 512
     canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -162,4 +256,5 @@ if __name__ == "__main__":
     make_project_cover("project-pwm.png", draw_pwm_cover)
     make_project_cover("project-portfolio.png", draw_portfolio_cover)
     make_project_cover("project-lab.png", draw_lab_cover)
+    make_project_cover("project-study-room.png", draw_study_room_cover)
     make_favicon()
