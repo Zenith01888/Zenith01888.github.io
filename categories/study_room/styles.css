@@ -115,7 +115,7 @@ button:disabled {
   transition: opacity 360ms ease, transform 360ms var(--ease-out), visibility 0s linear 360ms;
 }
 
-body:not(.mouse-idle) .room-wordmark {
+body.console-closed:not(.mouse-idle) .room-wordmark {
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, -50%);
