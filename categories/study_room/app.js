@@ -539,6 +539,7 @@
   }
 
   function stopSound() {
+    var wasNetease = activeSound === "netease";
     stopMusic();
     activeTimers.forEach(function (id) {
       clearInterval(id);
@@ -558,17 +559,14 @@
     });
     activeNodes = [];
     activeSound = "none";
-    hideNeteasePlayer();
+    if (wasNetease) hideNeteasePlayer();
     $("soundBtn").classList.remove("active");
     $("soundBtn").setAttribute("aria-pressed", "false");
     updateSoundButtons();
   }
 
   function hideNeteasePlayer() {
-    var player = $("neteasePlayer");
-    var frame = $("neteaseIframe");
-    if (player) player.hidden = true;
-    if (frame) frame.src = "about:blank";
+    if (window.studyRoomNetEase) window.studyRoomNetEase.stop();
     document.body.classList.remove("netease-active");
   }
 
@@ -596,15 +594,10 @@
     var parsed = parseNeteaseId(state.settings.neteaseId);
     state.settings.neteaseId = parsed.id;
     state.settings.neteaseType = parsed.type;
-    var frame = $("neteaseIframe");
-    var player = $("neteasePlayer");
-    var height = parsed.type === 0 ? 430 : parsed.type === 3 ? 330 : 86;
-    if (frame) {
-      frame.style.height = height + "px";
-      frame.src = "https://music.163.com/outchain/player?type=" + parsed.type +
-        "&id=" + parsed.id + "&auto=1&height=" + height;
+    if (window.studyRoomNetEase) {
+      window.studyRoomNetEase.load(parsed.id);
+      window.studyRoomNetEase.open();
     }
-    if (player) player.hidden = false;
     document.body.classList.add("netease-active");
     save();
   }

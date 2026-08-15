@@ -1,0 +1,299 @@
+:root {
+  --netease-panel-width: min(390px, calc(100vw - 24px));
+}
+
+.netease-float-btn {
+  position: fixed;
+  top: 84px;
+  right: 12px;
+  z-index: 52;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(17, 20, 28, 0.76);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px) saturate(150%);
+  color: var(--scene-accent, #38d9c0);
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, transform 180ms var(--ease-out), background 180ms ease;
+}
+
+.netease-float-btn:hover {
+  transform: translateY(-2px);
+  color: var(--ink);
+  border-color: rgba(56, 217, 192, 0.55);
+  background: rgba(24, 30, 42, 0.86);
+}
+
+.netease-float-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+body.netease-panel-open .netease-float-btn {
+  color: var(--ink);
+  border-color: rgba(56, 217, 192, 0.5);
+}
+
+.netease-panel {
+  position: fixed;
+  top: 142px;
+  right: 12px;
+  z-index: 50;
+  width: var(--netease-panel-width);
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(17, 20, 28, 0.72);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(24px) saturate(160%);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(calc(100% + 24px));
+  transition: opacity 240ms ease, transform 360ms var(--ease-out), visibility 0s linear 360ms;
+}
+
+body.netease-panel-open .netease-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: opacity 240ms ease, transform 360ms var(--ease-out), visibility 0s;
+}
+
+.netease-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.netease-panel-head > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.netease-panel-head strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netease-eyebrow {
+  color: var(--scene-accent, #38d9c0);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.netease-stage {
+  min-height: 220px;
+}
+
+.netease-loading,
+.netease-error {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  min-height: 220px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.netease-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--scene-accent, #38d9c0);
+  border-radius: 50%;
+  animation: netease-spin 800ms linear infinite;
+}
+
+.netease-error {
+  color: var(--warn);
+  font-size: 12px;
+}
+
+@keyframes netease-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.netease-panel .aplayer {
+  margin: 0;
+  background: transparent;
+  border-radius: 10px;
+  box-shadow: none;
+  font-family: var(--font-body);
+}
+
+.netease-panel .aplayer .aplayer-pic {
+  width: 82px;
+  height: 82px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.netease-panel .aplayer .aplayer-info {
+  padding: 4px 0 0 12px;
+}
+
+.netease-panel .aplayer .aplayer-music {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  margin-bottom: 4px;
+}
+
+.netease-panel .aplayer .aplayer-title {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.netease-panel .aplayer .aplayer-author {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.netease-panel .aplayer .aplayer-lrc {
+  min-height: 22px;
+  margin: 0;
+  text-align: left;
+  color: var(--ink-2);
+  font-size: 12px;
+}
+
+.netease-panel .aplayer .aplayer-controller {
+  margin-top: 4px;
+}
+
+.netease-panel .aplayer .aplayer-bar-wrap {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.netease-panel .aplayer .aplayer-bar,
+.netease-panel .aplayer .aplayer-loaded {
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.netease-panel .aplayer .aplayer-played {
+  height: 4px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--scene-accent, #38d9c0), var(--scene-accent-2, #ff9f68));
+}
+
+.netease-panel .aplayer .aplayer-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  background: #fff;
+  transform: scale(0.9);
+}
+
+.netease-panel .aplayer .aplayer-time {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.netease-panel .aplayer .aplayer-list {
+  display: block;
+  max-height: 220px !important;
+  overflow: auto;
+  margin-top: 10px;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.netease-panel .aplayer .aplayer-list ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.netease-panel .aplayer .aplayer-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.netease-panel .aplayer .aplayer-list li:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.netease-panel .aplayer .aplayer-list li.aplayer-list-light {
+  background: rgba(56, 217, 192, 0.12);
+  color: var(--ink);
+}
+
+.netease-panel .aplayer .aplayer-list-index {
+  flex: 0 0 24px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-align: center;
+}
+
+.netease-panel .aplayer .aplayer-list-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netease-panel .aplayer .aplayer-list-author {
+  flex: 0 0 90px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netease-panel .aplayer .aplayer-list-time {
+  flex: 0 0 34px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .netease-float-btn {
+    top: 78px;
+    right: 10px;
+  }
+
+  .netease-panel {
+    top: 132px;
+    right: 10px;
+    max-height: calc(100vh - 146px);
+    border-radius: 14px;
+  }
+}

@@ -10,8 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="netease-player.css">
   <script defer src="../../img/vendor/lucide/lucide.min.js"></script>
+  <script defer src="netease-player.js"></script>
   <script defer src="app.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
 </head>
 <body>
   <div class="room-bg" id="roomBg" aria-hidden="true"></div>
@@ -239,15 +243,27 @@
       </div>
       <ul class="music-list" id="musicList"></ul>
     </div>
-    <div class="netease-player" id="neteasePlayer" hidden>
-      <div class="netease-frame">
-        <iframe id="neteaseIframe" title="网易云音乐" loading="lazy" allow="autoplay" referrerpolicy="no-referrer"></iframe>
-      </div>
-    </div>
     <label class="volume-row" for="soundVolume">
       <i data-lucide="volume-2"></i>
       <input id="soundVolume" type="range" min="0" max="100" value="55">
     </label>
+  </aside>
+
+  <button class="netease-float-btn" id="neteaseFloatBtn" type="button" aria-label="网易云音乐播放器" aria-expanded="false" title="网易云音乐播放器">
+    <i data-lucide="music"></i>
+  </button>
+
+  <aside class="netease-panel" id="neteasePanel" aria-label="网易云音乐播放器" aria-hidden="true">
+    <div class="netease-panel-head">
+      <div>
+        <span class="netease-eyebrow">NETEASE CLOUD</span>
+        <strong>歌单播放器</strong>
+      </div>
+      <button class="icon-btn small" id="neteasePanelClose" type="button" aria-label="收起播放器">
+        <i data-lucide="chevron-right"></i>
+      </button>
+    </div>
+    <div class="netease-stage" id="neteaseStage"></div>
   </aside>
 
   <div class="settings-dialog" id="settingsDialog" hidden role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -277,7 +293,7 @@
         </label>
         <label class="setting-field">
           <span>网易云音乐</span>
-          <input id="setNetease" type="text" inputmode="url" placeholder="歌单 / 歌曲 ID 或链接" autocomplete="off">
+          <input id="setNetease" type="text" inputmode="url" placeholder="网易云歌单 ID 或链接" autocomplete="off">
         </label>
       </div>
       <label class="switch-row" for="setAuto">
