@@ -373,6 +373,13 @@ button:disabled {
   font-weight: 600;
 }
 
+.timer-prompt {
+  margin: -8px 0 0;
+  color: var(--ink-2);
+  font-size: 13px;
+  text-align: center;
+}
+
 .timer-controls {
   display: flex;
   align-items: center;
@@ -443,6 +450,38 @@ button:disabled {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--scene-accent), var(--scene-accent-2));
   transition: width 300ms linear;
+}
+
+.session-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.session-chip {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.session-chip span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.session-chip strong {
+  display: block;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .count-pill {
@@ -692,6 +731,25 @@ button:disabled {
   line-height: 1.55;
 }
 
+.quote-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.quote-block p {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.quote-block .icon-btn {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+}
+
 .focus-task-card,
 .members-card {
   margin-top: 10px;
@@ -848,6 +906,164 @@ button:disabled {
   grid-column: 1 / -1;
 }
 
+.music-player {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.music-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.now-playing {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.music-state {
+  margin-bottom: 2px;
+  color: var(--scene-accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.now-playing strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.now-playing > span:last-child {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.music-controls .music-play {
+  width: 34px;
+  height: 34px;
+  border-color: rgba(56, 217, 192, 0.5);
+  color: var(--scene-accent);
+}
+
+.music-progress {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.progress-track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--scene-accent), var(--scene-accent-2));
+}
+
+.music-lyrics {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.lyric-line {
+  color: var(--ink-2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.music-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.music-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.music-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--line-2);
+}
+
+.music-item.active {
+  border-color: rgba(56, 217, 192, 0.4);
+  background: rgba(56, 217, 192, 0.08);
+}
+
+.music-index {
+  flex: 0 0 22px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.music-item div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.music-item strong {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-item div span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
 .netease-player {
   margin-top: 10px;
 }
@@ -909,6 +1125,8 @@ body.netease-active .volume-row {
 .settings-panel {
   position: relative;
   width: min(460px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);

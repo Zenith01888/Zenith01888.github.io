@@ -19,6 +19,72 @@
     break: "休息",
     long: "长休息",
   };
+  var TRACKS = [
+    {
+      title: "晨光练习曲",
+      artist: "云上电台",
+      duration: 60,
+      root: 261.63,
+      chords: [[0, 4, 7], [0, 4, 7], [7, 11, 14], [5, 9, 12]],
+      melody: [0, 2, 4, 3, 2, 4, 5, 4, 2, 4, 7, 5, 4, 2, 0, 0],
+      lyrics: [
+        "翻开今天的第一页",
+        "窗外雨声刚好",
+        "呼吸放慢一拍",
+        "把题目交给耐心",
+        "答案会自己出现",
+        "这一页读完再休息",
+      ],
+    },
+    {
+      title: "夜航笔记",
+      artist: "云上电台",
+      duration: 60,
+      root: 146.83,
+      chords: [[0, 3, 7], [0, 3, 7], [7, 10, 14], [3, 7, 10]],
+      melody: [5, 4, 3, 2, 4, 5, 7, 4, 3, 2, 1, 0, 2, 4, 3, 2],
+      lyrics: [
+        "夜色把窗台擦亮",
+        "纸页翻过一页",
+        "笔尖落在哪一行",
+        "时间就停在那一行",
+        "不必急着抵达",
+        "灯亮着，路就清楚",
+      ],
+    },
+    {
+      title: "雨后半场",
+      artist: "云上电台",
+      duration: 60,
+      root: 174.61,
+      chords: [[0, 4, 7], [7, 11, 14], [5, 9, 12], [9, 12, 16]],
+      melody: [4, 5, 7, 5, 4, 2, 4, 5, 7, 9, 7, 5, 4, 2, 0, 2],
+      lyrics: [
+        "雨停以后空气很轻",
+        "刚学的公式还在纸上",
+        "把混乱整理成行",
+        "留白也属于完成",
+        "慢慢来，比较快",
+        "下一段会更有力气",
+      ],
+    },
+    {
+      title: "云上慢车",
+      artist: "云上电台",
+      duration: 60,
+      root: 196,
+      chords: [[0, 4, 7], [5, 9, 12], [3, 7, 10], [0, 4, 7]],
+      melody: [7, 5, 4, 2, 4, 5, 7, 5, 4, 2, 0, 2, 4, 5, 4, 0],
+      lyrics: [
+        "没有哪一站必须准时",
+        "窗外风景慢慢经过",
+        "今天的进度已经出发",
+        "专心比完美更重要",
+        "先把手上的事做完",
+        "下一站自有安排",
+      ],
+    },
+  ];
   var SCENES = {
     p1: { type: "image", src: "assets/p1.webp", label: "P1 图片" },
   };
@@ -33,6 +99,8 @@
       sound: "rain",
       volume: 55,
       autoBreak: true,
+      strictMode: false,
+      showTips: true,
       neteaseId: "12275290957",
       neteaseType: 0,
     },
@@ -69,6 +137,9 @@
     round: 1,
     endsAt: null,
     sessionElapsed: 0,
+    sessionRest: 0,
+    lastFocusSeconds: 0,
+    lastRestSeconds: 0,
     lastTickAt: 0,
     interval: null,
   };
@@ -79,6 +150,15 @@
   var activeNodes = [];
   var activeTimers = [];
   var soundDockTimer = null;
+  var quoteIndex = Math.floor(Math.random() * QUOTES.length);
+  var musicTrackIndex = 0;
+  var musicPlaying = false;
+  var musicGain = null;
+  var musicStartAt = 0;
+  var musicPausedAt = 0;
+  var musicElapsed = 0;
+  var musicTimer = null;
+  var musicLyricIndex = -1;
 
   function save() {
     try {
@@ -169,6 +249,27 @@
     $("timerRing").style.setProperty("--progress", progress.toFixed(4));
     $("sessionBar").style.width = (progress * 100).toFixed(2) + "%";
 
+    var focusSeconds = timer.mode === "focus" ? timer.sessionElapsed : timer.lastFocusSeconds;
+    var restSeconds = timer.mode === "focus" ? timer.lastRestSeconds : timer.sessionRest;
+    if ($("sessionFocusText")) $("sessionFocusText").textContent = fmtTime(focusSeconds);
+    if ($("sessionRestText")) $("sessionRestText").textContent = fmtTime(restSeconds);
+    if ($("timerPrompt")) {
+      if (!timer.running && timer.mode === "focus") {
+        $("timerPrompt").textContent = "开始认真学习/工作吧";
+      } else if (!timer.running) {
+        $("timerPrompt").textContent = "休息中，先放松一下";
+      } else if (timer.mode === "focus") {
+        $("timerPrompt").textContent = "保持节奏，认真完成这一轮";
+      } else {
+        $("timerPrompt").textContent = "休息中，听听音乐或活动一下";
+      }
+    }
+    if ($("sessionStatus")) {
+      $("sessionStatus").textContent = timer.mode === "focus"
+        ? "本次专注 " + fmtTime(focusSeconds)
+        : "休息中 · 已休息 " + fmtTime(restSeconds);
+    }
+
     var primary = $("primaryTimer");
     primary.innerHTML =
       "<span>" + (timer.running ? "暂停" : "开始") + "</span>" +
@@ -206,9 +307,12 @@
 
   function tick() {
     var now = Date.now();
-    if (timer.lastTickAt && timer.mode === "focus") {
+    if (timer.lastTickAt) {
       var dt = (now - timer.lastTickAt) / 1000;
-      if (dt > 0 && dt < 10) timer.sessionElapsed += dt;
+      if (dt > 0 && dt < 10) {
+        if (timer.mode === "focus") timer.sessionElapsed += dt;
+        else timer.sessionRest += dt;
+      }
     }
     timer.lastTickAt = now;
     timer.remaining = Math.max(0, Math.ceil((timer.endsAt - now) / 1000));
@@ -226,6 +330,7 @@
       var completed = timer.round;
       var nextMode = completed % state.settings.rounds === 0 ? "long" : "break";
       var seconds = Math.max(1, Math.round(timer.sessionElapsed));
+      timer.lastFocusSeconds = seconds;
       state.stats.sessions += 1;
       state.stats.totalSeconds += seconds;
       state.stats.longestSeconds = Math.max(state.stats.longestSeconds, seconds);
@@ -236,11 +341,14 @@
       save();
       renderStats();
       playBell();
-      showToast("专注完成，休息一下");
+      showToast("专注完成，本次共学习 " + fmtShort(seconds) + "，休息一下");
       switchMode(nextMode, false);
       if (state.settings.autoBreak) startTimer();
     } else {
-      timer.sessionElapsed = 0;
+      var restSeconds = Math.max(1, Math.round(timer.sessionRest));
+      timer.lastRestSeconds = restSeconds;
+      timer.sessionRest = 0;
+      showToast("休息结束，已休息 " + fmtShort(restSeconds));
       switchMode("focus", false);
       if (state.settings.autoBreak) startTimer();
     }
@@ -252,15 +360,24 @@
     timer.remaining = modeSeconds(timer.mode);
     timer.total = modeSeconds(timer.mode);
     timer.sessionElapsed = 0;
+    timer.sessionRest = 0;
+    timer.lastFocusSeconds = 0;
+    timer.lastRestSeconds = 0;
     renderTimerUI();
   }
 
   function switchMode(mode, keepRemaining) {
     pauseTimer();
+    var prevMode = timer.mode;
+    if (prevMode !== mode) {
+      if (prevMode === "focus") timer.lastFocusSeconds = timer.sessionElapsed;
+      if (prevMode !== "focus") timer.lastRestSeconds = timer.sessionRest;
+    }
     timer.mode = mode;
     timer.remaining = keepRemaining ? timer.remaining : modeSeconds(mode);
     timer.total = modeSeconds(mode);
     timer.sessionElapsed = 0;
+    timer.sessionRest = 0;
     document.querySelectorAll(".mode-switch button").forEach(function (btn) {
       var on = btn.dataset.mode === (mode === "long" ? "break" : mode);
       btn.classList.toggle("active", on);
@@ -391,6 +508,18 @@
     $("avatarStack").innerHTML = "<span>R</span>";
   }
 
+  function renderQuote() {
+    var block = $("quoteBlock");
+    var text = $("quoteText");
+    if (block) block.hidden = !state.settings.showTips;
+    if (text) text.textContent = QUOTES[quoteIndex % QUOTES.length];
+  }
+
+  function nextQuote() {
+    quoteIndex = (quoteIndex + 1) % QUOTES.length;
+    renderQuote();
+  }
+
   function updateClock() {
     $("clockText").textContent = new Date().toLocaleTimeString("zh-CN", { hour12: false });
   }
@@ -410,6 +539,7 @@
   }
 
   function stopSound() {
+    stopMusic();
     activeTimers.forEach(function (id) {
       clearInterval(id);
     });
@@ -584,6 +714,197 @@
     activeTimers.push(timer);
   }
 
+  function stopMusic() {
+    musicPlaying = false;
+    musicGain = null;
+    musicStartAt = 0;
+    musicPausedAt = 0;
+    musicElapsed = 0;
+    musicLyricIndex = -1;
+    if (musicTimer) {
+      clearInterval(musicTimer);
+      musicTimer = null;
+    }
+    var lyric = $("musicLyricText");
+    if (lyric) lyric.textContent = "选择一首歌，开始今天的节奏。";
+  }
+
+  function makeTrackMusic(ctx, track) {
+    var filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 1500;
+    filter.Q.value = 0.6;
+    var gain = ctx.createGain();
+    gain.gain.value = 0.13;
+    filter.connect(gain);
+    gain.connect(master);
+    activeNodes.push(filter, gain);
+    musicGain = gain;
+
+    var chords = track.chords.map(function (chord) {
+      return chord.map(function (semi) {
+        return track.root * Math.pow(2, semi / 12);
+      });
+    });
+    var oscs = chords[0].map(function (frequency) {
+      var osc = ctx.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.value = frequency;
+      osc.connect(filter);
+      osc.start();
+      activeNodes.push(osc);
+      return osc;
+    });
+
+    var lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.06;
+    var lfoGain = ctx.createGain();
+    lfoGain.gain.value = 340;
+    lfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+    lfo.start();
+    activeNodes.push(lfo, lfoGain);
+
+    var chordIndex = 0;
+    activeTimers.push(setInterval(function () {
+      chordIndex = (chordIndex + 1) % chords.length;
+      oscs.forEach(function (osc, index) {
+        osc.frequency.setValueAtTime(chords[chordIndex][index], ctx.currentTime);
+      });
+    }, 6000));
+
+    var scale = [0, 2, 4, 5, 7, 9, 11, 12];
+    var melodyIndex = 0;
+    activeTimers.push(setInterval(function () {
+      var degree = track.melody[melodyIndex % track.melody.length];
+      var freq = track.root * Math.pow(2, (12 + scale[degree % scale.length]) / 12);
+      var now = ctx.currentTime;
+      var osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      var note = ctx.createGain();
+      note.gain.setValueAtTime(0.0001, now);
+      note.gain.exponentialRampToValueAtTime(0.045, now + 0.02);
+      note.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+      osc.connect(note);
+      note.connect(gain);
+      osc.start(now);
+      osc.stop(now + 0.9);
+      activeNodes.push(osc, note);
+      melodyIndex++;
+    }, 900));
+  }
+
+  function renderMusicUI() {
+    var track = TRACKS[musicTrackIndex] || TRACKS[0];
+    $("musicTitle").textContent = track.title;
+    $("musicArtist").textContent = track.artist;
+    $("musicDuration").textContent = fmtTime(track.duration);
+    var elapsed = musicStartAt
+      ? (musicPausedAt ? musicElapsed : musicElapsed + (Date.now() - musicStartAt) / 1000)
+      : musicElapsed;
+    $("musicElapsed").textContent = fmtTime(elapsed);
+    $("musicProgressBar").style.width = Math.min(100, (elapsed / track.duration) * 100) + "%";
+    musicLyricIndex = Math.min(
+      track.lyrics.length - 1,
+      Math.floor(elapsed / (track.duration / track.lyrics.length))
+    );
+    $("musicLyricText").textContent = track.lyrics[musicLyricIndex];
+    $("musicToggle").innerHTML = '<i data-lucide="' + (musicPlaying ? "pause" : "play") + '"></i>';
+    $("musicList").innerHTML = TRACKS.map(function (item, index) {
+      return (
+        '<li class="music-item' + (index === musicTrackIndex ? " active" : "") + '" data-index="' + index + '">' +
+          '<span class="music-index">' + String(index + 1).padStart(2, "0") + "</span>" +
+          "<div><strong>" + item.title + "</strong><span>" + item.artist + "</span></div>" +
+        "</li>"
+      );
+    }).join("");
+    refreshIcons();
+  }
+
+  function updateMusicProgress() {
+    if (!audioCtx || !musicStartAt) return;
+    var track = TRACKS[musicTrackIndex];
+    if (!track) return;
+    var elapsed = musicPausedAt
+      ? musicElapsed
+      : musicElapsed + (Date.now() - musicStartAt) / 1000;
+    if (elapsed >= track.duration) {
+      if (musicPlaying) {
+        nextTrack();
+        return;
+      }
+      elapsed = track.duration;
+    }
+    $("musicElapsed").textContent = fmtTime(elapsed);
+    $("musicProgressBar").style.width = Math.min(100, (elapsed / track.duration) * 100) + "%";
+    var lyricIndex = Math.min(
+      track.lyrics.length - 1,
+      Math.floor(elapsed / (track.duration / track.lyrics.length))
+    );
+    if (lyricIndex !== musicLyricIndex) {
+      musicLyricIndex = lyricIndex;
+      $("musicLyricText").textContent = track.lyrics[lyricIndex];
+    }
+  }
+
+  function startMusicTrack(index) {
+    stopSound();
+    activeSound = "music";
+    musicTrackIndex = ((index % TRACKS.length) + TRACKS.length) % TRACKS.length;
+    var ctx = ensureAudio();
+    if (!ctx) return;
+    var track = TRACKS[musicTrackIndex];
+    musicStartAt = Date.now();
+    musicElapsed = 0;
+    musicPausedAt = 0;
+    musicPlaying = true;
+    makeTrackMusic(ctx, track);
+    if (musicTimer) clearInterval(musicTimer);
+    musicTimer = setInterval(updateMusicProgress, 250);
+    state.settings.sound = "music";
+    save();
+    $("soundBtn").classList.add("active");
+    $("soundBtn").setAttribute("aria-pressed", "true");
+    updateSoundButtons();
+    renderMusicUI();
+  }
+
+  function toggleMusic() {
+    if (!musicPlaying) {
+      if (activeSound !== "music") {
+        startMusicTrack(musicTrackIndex);
+        return;
+      }
+      if (!audioCtx || !musicGain) return;
+      musicStartAt = Date.now();
+      musicPausedAt = 0;
+      musicPlaying = true;
+      musicGain.gain.setValueAtTime(0.13, audioCtx.currentTime);
+      if (musicTimer) clearInterval(musicTimer);
+      musicTimer = setInterval(updateMusicProgress, 250);
+    } else {
+      if (!audioCtx || !musicGain) return;
+      musicElapsed += (Date.now() - musicStartAt) / 1000;
+      musicPausedAt = Date.now();
+      musicPlaying = false;
+      musicGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+      if (musicTimer) {
+        clearInterval(musicTimer);
+        musicTimer = null;
+      }
+    }
+    renderMusicUI();
+  }
+
+  function nextTrack() {
+    startMusicTrack(musicTrackIndex + 1);
+  }
+
+  function prevTrack() {
+    startMusicTrack(musicTrackIndex - 1);
+  }
+
   function startSound(type) {
     if (type === "none") {
       stopSound();
@@ -600,6 +921,10 @@
       $("soundBtn").classList.add("active");
       $("soundBtn").setAttribute("aria-pressed", "true");
       updateSoundButtons();
+      return;
+    }
+    if (type === "music") {
+      startMusicTrack(musicTrackIndex);
       return;
     }
     var ctx = ensureAudio();
@@ -670,6 +995,8 @@
     $("setRounds").value = state.settings.rounds;
     $("setNetease").value = state.settings.neteaseId || "12275290957";
     $("setAuto").checked = !!state.settings.autoBreak;
+    $("setStrict").checked = !!state.settings.strictMode;
+    $("setTips").checked = !!state.settings.showTips;
     $("settingsDialog").hidden = false;
   }
 
@@ -688,8 +1015,11 @@
     state.settings.neteaseId = netease.id;
     state.settings.neteaseType = netease.type;
     state.settings.autoBreak = $("setAuto").checked;
+    state.settings.strictMode = $("setStrict").checked;
+    state.settings.showTips = $("setTips").checked;
     save();
     if (activeSound === "netease") loadNeteasePlayer();
+    renderQuote();
     if (!timer.running) {
       timer.remaining = modeSeconds(timer.mode);
       timer.total = modeSeconds(timer.mode);
@@ -736,7 +1066,9 @@
 
     $("resetTimer").addEventListener("click", resetTimer);
     $("skipTimer").addEventListener("click", function () {
-      var next = timer.mode === "focus" ? "break" : "focus";
+      var next = timer.mode === "focus"
+        ? (timer.round % state.settings.rounds === 0 ? "long" : "break")
+        : "focus";
       switchMode(next, false);
       showToast("已切换计时", 1200);
     });
@@ -776,6 +1108,10 @@
     $("focusExitBtn").addEventListener("click", function () {
       setFocusMode(false);
     });
+    $("quoteRefresh").addEventListener("click", function () {
+      nextQuote();
+      showToast("一言已更新", 1000);
+    });
 
     $("soundBtn").addEventListener("click", function () {
       toggleSoundDock();
@@ -788,6 +1124,14 @@
       if (!button) return;
       startSound(button.dataset.sound);
       showToast(button.textContent.trim() + " 已开启", 1200);
+    });
+    $("musicToggle").addEventListener("click", toggleMusic);
+    $("musicPrev").addEventListener("click", prevTrack);
+    $("musicNext").addEventListener("click", nextTrack);
+    $("musicList").addEventListener("click", function (event) {
+      var item = event.target.closest("[data-index]");
+      if (!item) return;
+      startMusicTrack(parseInt(item.dataset.index, 10));
     });
     $("soundVolume").addEventListener("input", function () {
       var value = parseInt(this.value, 10) || 0;
@@ -803,6 +1147,12 @@
 
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);
     document.addEventListener("fullscreenchange", updateFullscreenIcon);
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && state.settings.strictMode && timer.running && timer.mode === "focus") {
+        pauseTimer();
+        showToast("窗口已隐藏，专注计时已暂停", 2200);
+      }
+    });
 
     $("statsReset").addEventListener("click", function () {
       if (!window.confirm("确认清空全部学习数据？")) return;
@@ -828,9 +1178,12 @@
     renderTasks();
     renderStats();
     renderRoomStatus();
+    renderQuote();
+    renderMusicUI();
     updateClock();
     bindEvents();
     refreshIcons();
+    setInterval(nextQuote, 30000);
     setInterval(updateClock, 1000);
   }
 
