@@ -177,22 +177,17 @@
     }
     timer.total = modeSeconds(timer.mode);
     $("timeText").textContent = fmtTime(timer.remaining);
-    $("navTime").textContent = fmtTime(timer.remaining);
     $("modeBadge").textContent = MODE_LABELS[timer.mode] || "专注";
-    $("navMode").textContent = state.settings.timerType === "timer" ? "计时器" : "番茄钟";
 
     var cycle = timer.mode === "focus"
       ? ((timer.round - 1) % state.settings.rounds) + 1
       : timer.round;
     if (timer.mode === "focus") {
       $("roundText").textContent = "第 " + cycle + " / " + state.settings.rounds + " 轮";
-      $("navStatus").textContent = timer.running ? "专注中" : "等待开始";
     } else if (timer.mode === "timer") {
       $("roundText").textContent = "倒计时";
-      $("navStatus").textContent = timer.running ? "计时中" : "等待开始";
     } else {
       $("roundText").textContent = timer.mode === "long" ? "长休息" : "休息中";
-      $("navStatus").textContent = "休息中";
     }
 
     var progress = timer.total > 0
@@ -344,6 +339,46 @@
       return task.pinned;
     });
     $("pinnedTask").textContent = pinned ? pinned.text : "还没有固定任务";
+    renderTodoStrip();
+    renderFocusTasks();
+    refreshIcons();
+  }
+
+  function renderTodoStrip() {
+    var strip = $("todoStripItems");
+    if (!strip) return;
+    if (!state.todos.length) {
+      strip.innerHTML = '<span class="todo-empty">还没有待办事项</span>';
+      return;
+    }
+    strip.innerHTML = state.todos.map(function (task) {
+      var classes = ["todo-chip"];
+      if (task.done) classes.push("done");
+      if (task.pinned) classes.push("pinned");
+      return '<button class="' + classes.join(" ") + '" type="button" data-task-id="' + task.id + '" title="' + escapeHtml(task.text) + '"><span>' + escapeHtml(task.text) + '</span></button>';
+    }).join("");
+  }
+
+  function renderFocusTasks() {
+    var section = $("focusTaskSection");
+    var list = $("focusTaskList");
+    if (!section || !list) return;
+    if (!state.todos.length) {
+      section.hidden = true;
+      list.innerHTML = "";
+      return;
+    }
+    section.hidden = false;
+    list.innerHTML = state.todos.map(function (task) {
+      var doneAction = task.done
+        ? '<button class="focus-task-delete" type="button" data-action="delete" title="删除" aria-label="删除"><i data-lucide="trash-2"></i></button>'
+        : '';
+      return '<li class="focus-task' + (task.done ? " done" : "") + '" data-id="' + task.id + '">' +
+        '<button class="focus-task-check" type="button" data-action="toggle" title="完成" aria-label="完成"><i data-lucide="check"></i></button>' +
+        '<span>' + escapeHtml(task.text) + '</span>' +
+        doneAction +
+        '</li>';
+    }).join("");
     refreshIcons();
   }
 
@@ -713,6 +748,12 @@
     if (bar) bar.setAttribute("aria-expanded", closed ? "false" : "true");
   }
 
+  function openConsole() {
+    document.body.classList.remove("console-closed");
+    var bar = $("topbar");
+    if (bar) bar.setAttribute("aria-expanded", "true");
+  }
+
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
@@ -721,10 +762,14 @@
     }
   }
 
+  function updateClock() {
+    var now = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+    if ($("headerClock")) $("headerClock").textContent = now;
+    if ($("panelClock")) $("panelClock").textContent = now;
+  }
+
   function updateFullscreenIcon() {
-    var icon = document.fullscreenElement ? "minimize-2" : "maximize-2";
-    $("fullscreenBtn").innerHTML = '<i data-lucide="' + icon + '"></i>';
-    refreshIcons();
+    $("fullscreenBtn").textContent = document.fullscreenElement ? "退出全屏" : "全屏";
   }
 
   function bindEvents() {
@@ -779,6 +824,21 @@
       if (action === "pin") pinTask(id);
     });
 
+    $("todoStripItems").addEventListener("click", function (event) {
+      var chip = event.target.closest("[data-task-id]");
+      if (!chip) return;
+      openConsole();
+      switchView("tasks");
+    });
+
+    $("focusTaskList").addEventListener("click", function (event) {
+      var button = event.target.closest("button[data-action]");
+      if (!button) return;
+      var id = button.closest(".focus-task").dataset.id;
+      if (button.dataset.action === "toggle") toggleTask(id);
+      if (button.dataset.action === "delete") deleteTask(id);
+    });
+
     document.querySelectorAll(".side-menu button").forEach(function (btn) {
       btn.addEventListener("click", function () {
         switchView(btn.dataset.view);
@@ -814,6 +874,8 @@
       if (event.target.closest("button")) return;
       toggleConsole();
     });
+
+    $("toggleConsoleBtn").addEventListener("click", toggleConsole);
 
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);
     document.addEventListener("fullscreenchange", updateFullscreenIcon);
@@ -866,8 +928,10 @@
     renderHint();
     renderChat();
     updateSoundButtons();
+    updateClock();
     bindEvents();
     refreshIcons();
+    setInterval(updateClock, 1000);
     setInterval(nextHint, 30000);
   }
 

@@ -23,22 +23,21 @@
   <div class="pixel-noise" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
 
-  <header class="topbar" id="topbar" aria-expanded="true" title="点击导航栏收起 / 展开控制台">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true">R</span>
-      <span>云上自习室</span>
+  <header class="topbar" id="topbar" aria-expanded="true">
+    <button class="nav-ghost-btn" id="toggleConsoleBtn" type="button" title="切换控制台" aria-label="切换控制台">切换</button>
+    <div class="header-clock" aria-label="现在时间">
+      <span id="headerClock">--:--:--</span>
     </div>
-    <div class="nav-clock" aria-label="当前计时状态">
-      <span id="navMode">番茄钟</span>
-      <strong id="navTime">25:00</strong>
-      <span id="navStatus">等待开始</span>
-    </div>
-    <div class="top-actions">
-      <button id="fullscreenBtn" class="icon-btn" type="button" title="全屏" aria-label="全屏">
-        <i data-lucide="maximize-2"></i>
-      </button>
-    </div>
+    <button class="nav-ghost-btn" id="fullscreenBtn" type="button" title="全屏" aria-label="全屏">全屏</button>
   </header>
+
+  <div class="todo-strip" id="todoStrip">
+    <span class="todo-strip-label">
+      <i data-lucide="list-checks"></i>
+      <span>待办</span>
+    </span>
+    <div class="todo-strip-items" id="todoStripItems"></div>
+  </div>
 
   <main class="room-layout">
     <div class="decor-room" aria-hidden="true">
@@ -119,6 +118,18 @@
               </button>
             </div>
           </div>
+
+          <div class="panel-clock">
+            <span>现在时间</span>
+            <strong id="panelClock">--:--:--</strong>
+          </div>
+
+          <section class="focus-tasks" id="focusTaskSection" hidden>
+            <div class="focus-tasks-head">
+              <span>当前任务</span>
+            </div>
+            <ul class="focus-task-list" id="focusTaskList"></ul>
+          </section>
 
           <div class="param-grid">
             <label class="param-field">
