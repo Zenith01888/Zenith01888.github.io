@@ -330,6 +330,37 @@ body.mouse-idle .nav-ghost-btn {
   height: 14px;
   background: rgba(255, 255, 255, 0.24);
 }
+.header-mode {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 7px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.header-mode.focus {
+  border-color: rgba(61, 220, 132, 0.38);
+  background: rgba(61, 220, 132, 0.14);
+  color: var(--green);
+}
+
+.header-mode.rest {
+  border-color: rgba(255, 209, 102, 0.38);
+  background: rgba(255, 209, 102, 0.12);
+  color: var(--amber);
+}
+
+.header-mode.timer {
+  border-color: rgba(143, 203, 255, 0.38);
+  background: rgba(143, 203, 255, 0.12);
+  color: var(--blue);
+}
 
 #headerNow {
   color: rgba(255, 255, 255, 0.72);
@@ -1554,6 +1585,11 @@ body.timer-type-simple .toggle-row:first-child {
 
   #headerNow {
     font-size: 10px;
+  }
+
+  .header-mode {
+    font-size: 9px;
+    padding: 0 6px;
   }
 
   .topbar {

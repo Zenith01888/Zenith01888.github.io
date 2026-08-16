@@ -203,7 +203,14 @@
     timer.total = modeSeconds(timer.mode);
     $("timeText").textContent = fmtTime(timer.remaining);
     if ($("headerClock")) $("headerClock").textContent = fmtTime(timer.remaining);
-    $("modeBadge").textContent = MODE_LABELS[timer.mode] || "专注";
+    var modeLabel = MODE_LABELS[timer.mode] || "专注";
+    $("modeBadge").textContent = modeLabel;
+    var headerMode = $("headerMode");
+    if (headerMode) {
+      headerMode.textContent = modeLabel;
+      var modeClass = timer.mode === "timer" ? "timer" : (timer.mode === "break" || timer.mode === "long" ? "rest" : "focus");
+      headerMode.className = "header-mode " + modeClass;
+    }
 
     var cycle = timer.mode === "focus"
       ? ((timer.round - 1) % state.settings.rounds) + 1
