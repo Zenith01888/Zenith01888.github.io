@@ -90,7 +90,7 @@ button:disabled {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(180deg, rgba(5, 7, 11, 0.58), rgba(5, 7, 11, 0.34) 46%, rgba(5, 7, 11, 0.66));
+    linear-gradient(180deg, rgba(8, 10, 15, 0.22), rgba(8, 10, 15, 0.08) 46%, rgba(8, 10, 15, 0.28));
   pointer-events: none;
 }
 
