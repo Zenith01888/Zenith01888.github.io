@@ -1515,6 +1515,7 @@ body.timer-type-simple .toggle-row:first-child {
 @media (max-width: 860px) {
   .app-modal {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
     width: calc(100vw - 20px);
     height: calc(100vh - 174px);
     border-radius: 18px;
@@ -1532,6 +1533,7 @@ body.timer-type-simple .toggle-row:first-child {
   .side-menu button {
     flex: 0 0 auto;
     min-height: 38px;
+    white-space: nowrap;
   }
 
   .side-menu button.active {
