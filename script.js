@@ -465,9 +465,14 @@
     searchResults.innerHTML = "";
 
     const keyword = query.trim().toLowerCase();
+    if (!keyword) {
+      if (searchEmpty) searchEmpty.hidden = true;
+      return;
+    }
+
     let matches = 0;
     projectItems.forEach((item) => {
-      if (keyword && !item.textContent.toLowerCase().includes(keyword)) return;
+      if (!item.textContent.toLowerCase().includes(keyword)) return;
 
       const titleElement = item.querySelector(".article-title");
       const contentElement = item.querySelector(".content");
@@ -501,7 +506,8 @@
     if (searchButton) searchButton.setAttribute("aria-expanded", "true");
     if (searchInput) {
       searchInput.value = "";
-      renderSearchResults("");
+      if (searchResults) searchResults.innerHTML = "";
+      if (searchEmpty) searchEmpty.hidden = true;
       searchInput.focus();
     }
   }
