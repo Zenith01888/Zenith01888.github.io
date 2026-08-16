@@ -1431,8 +1431,7 @@ body.bw-mode #rightside {
     transform: none;
   }
 
-  .nav-dropdown.open .nav-dropdown__menu,
-  .nav-dropdown:hover .nav-dropdown__menu {
+  .nav-dropdown.open .nav-dropdown__menu {
     display: block;
     opacity: 1;
     visibility: visible;
