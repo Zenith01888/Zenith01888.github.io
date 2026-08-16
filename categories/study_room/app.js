@@ -82,6 +82,7 @@
   var state = loadState();
   var calendarYear = 0;
   var calendarMonth = 0;
+  var wakeLock = null;
   var timer = {
     running: false,
     mode: state.settings.timerType === "timer" ? "timer" : "focus",
@@ -838,6 +839,35 @@
       document.exitFullscreen();
     }
   }
+
+  function requestWakeLock() {
+    if (!document.fullscreenElement || !navigator.wakeLock) return;
+    if (wakeLock) return;
+    navigator.wakeLock.request("screen").then(function (lock) {
+      if (!document.fullscreenElement) {
+        lock.release().catch(function () {});
+        return;
+      }
+      wakeLock = lock;
+      lock.addEventListener("release", function () {
+        if (wakeLock === lock) wakeLock = null;
+      });
+    }).catch(function () {
+      wakeLock = null;
+    });
+  }
+
+  function releaseWakeLock() {
+    if (!wakeLock) return;
+    var lock = wakeLock;
+    wakeLock = null;
+    lock.release().catch(function () {});
+  }
+
+  function syncWakeLock() {
+    if (document.fullscreenElement) requestWakeLock();
+    else releaseWakeLock();
+  }
   function wakeNav() {
     document.body.classList.remove("mouse-idle");
     if (mouseIdleTimer) clearTimeout(mouseIdleTimer);
@@ -975,12 +1005,16 @@
       if (mouseIdleTimer) clearTimeout(mouseIdleTimer);
       document.body.classList.add("mouse-idle");
     });
-    document.addEventListener("fullscreenchange", updateFullscreenIcon);
+    document.addEventListener("fullscreenchange", function () {
+      updateFullscreenIcon();
+      syncWakeLock();
+    });
     document.addEventListener("visibilitychange", function () {
       if (document.hidden && state.settings.strictMode && timer.running) {
         pauseTimer();
         showToast("窗口已隐藏，专注计时已暂停", 2200);
       }
+      if (!document.hidden) syncWakeLock();
     });
 
     ["setFocus", "setBreak", "setRounds"].forEach(function (id) {
