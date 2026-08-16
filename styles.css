@@ -1418,6 +1418,7 @@ body.bw-mode #rightside {
 
   .nav-dropdown__menu {
     position: static;
+    display: none;
     min-width: 0;
     margin: 4px 10px 8px;
     padding: 4px;
@@ -1432,6 +1433,7 @@ body.bw-mode #rightside {
 
   .nav-dropdown.open .nav-dropdown__menu,
   .nav-dropdown:hover .nav-dropdown__menu {
+    display: block;
     opacity: 1;
     visibility: visible;
     transform: none;
