@@ -24,6 +24,13 @@
   var player = null;
   var pendingLoad = 0;
   var readyTimer = null;
+  var currentTracks = null;
+  var currentTrackIndex = 0;
+  var currentLyricIndex = -1;
+  var lyricsRoot = null;
+  var lyricsBox = null;
+  var lyricLines = [];
+  var lyricEls = [];
 
   function $(id) {
     return document.getElementById(id);
@@ -85,6 +92,20 @@
       }
       player = null;
     }
+    currentTracks = null;
+    currentTrackIndex = 0;
+    currentLyricIndex = -1;
+    if (lyricsRoot) {
+      try {
+        lyricsRoot.remove();
+      } catch (error) {
+        // The element may already be detached.
+      }
+      lyricsRoot = null;
+    }
+    lyricsBox = null;
+    lyricLines = [];
+    lyricEls = [];
     if (stage) stage.textContent = "";
   }
 
@@ -139,13 +160,179 @@
       });
   }
 
+  function setLyricsPlaceholder(text, instrumental) {
+    if (!lyricsBox) return;
+    lyricsBox.textContent = "";
+    currentLyricIndex = -1;
+    var line = document.createElement("p");
+    line.className = "netease-lyric-placeholder" + (instrumental ? " instrumental" : "");
+    line.textContent = text;
+    lyricsBox.appendChild(line);
+    lyricLines = [];
+    lyricEls = [];
+  }
+
+  function parseLrc(text) {
+    var timed = [];
+    var plain = [];
+    var lines = String(text || "").split(/\r?\n/);
+    var timeRe = /\[(\d{1,3}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g;
+    lines.forEach(function (line) {
+      var timeMatches = [];
+      var match;
+      timeRe.lastIndex = 0;
+      while ((match = timeRe.exec(line)) !== null) {
+        var minutes = parseInt(match[1], 10);
+        var seconds = parseInt(match[2], 10);
+        var fraction = match[3] ? parseFloat("0." + match[3]) : 0;
+        timeMatches.push(minutes * 60 + seconds + fraction);
+      }
+      var content = line.replace(/\[[^\]]*\]/g, "").trim();
+      if (!content) return;
+      if (timeMatches.length) {
+        timeMatches.forEach(function (time) {
+          timed.push({ time: time, text: content });
+        });
+      } else {
+        plain.push(content);
+      }
+    });
+    timed.sort(function (a, b) {
+      return a.time - b.time;
+    });
+    return { timed: timed, plain: plain };
+  }
+
+  function isInstrumentalLrc(text) {
+    return /纯音乐/.test(String(text || ""));
+  }
+
+  function renderLyrics(text) {
+    if (!lyricsBox) return;
+    if (isInstrumentalLrc(text)) {
+      setLyricsPlaceholder("纯音乐，请欣赏", true);
+      return;
+    }
+    var parsed = parseLrc(text);
+    if (!parsed.timed.length) {
+      currentLyricIndex = -1;
+      lyricLines = [];
+      lyricEls = [];
+      lyricsBox.textContent = "";
+      parsed.plain.forEach(function (lineText) {
+        var line = document.createElement("p");
+        line.className = "netease-lyric-line static";
+        line.textContent = lineText;
+        lyricsBox.appendChild(line);
+        lyricEls.push(line);
+      });
+      if (!parsed.plain.length) setLyricsPlaceholder("暂无歌词");
+      return;
+    }
+    lyricLines = parsed.timed;
+    lyricEls = [];
+    lyricsBox.textContent = "";
+    parsed.timed.forEach(function (item) {
+      var line = document.createElement("p");
+      line.className = "netease-lyric-line";
+      line.textContent = item.text;
+      lyricsBox.appendChild(line);
+      lyricEls.push(line);
+    });
+    updateLyricTime();
+  }
+
+  function updateLyricTime() {
+    if (!player || !player.audio || !lyricLines.length || !lyricEls.length || !lyricsBox) return;
+    var time = player.audio.currentTime || 0;
+    var index = 0;
+    for (var i = 0; i < lyricLines.length; i += 1) {
+      if (time >= lyricLines[i].time) index = i;
+      else break;
+    }
+    if (index === currentLyricIndex) return;
+    currentLyricIndex = index;
+    lyricEls.forEach(function (el, i) {
+      el.classList.toggle("active", i === index);
+    });
+    var activeEl = lyricEls[index];
+    if (activeEl) {
+      var target = activeEl.offsetTop - lyricsBox.clientHeight / 2 + activeEl.offsetHeight / 2;
+      lyricsBox.scrollTop = Math.max(0, target);
+    }
+  }
+
+  function fetchLyrics(url) {
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
+      controller.abort();
+    }, API_TIMEOUT);
+    return fetch(url, { signal: controller.signal, cache: "no-store" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.text();
+      })
+      .then(function (text) {
+        clearTimeout(timer);
+        return text;
+      })
+      .catch(function (error) {
+        clearTimeout(timer);
+        throw error;
+      });
+  }
+
+  function loadTrackLyrics(index) {
+    if (!lyricsBox) return;
+    currentTrackIndex = index;
+    var track = currentTracks && currentTracks[index];
+    if (!track || !track.lrc) {
+      setLyricsPlaceholder("暂无歌词");
+      return;
+    }
+    setLyricsPlaceholder("正在加载歌词");
+    var token = index;
+    fetchLyrics(track.lrc)
+      .then(function (text) {
+        if (token !== currentTrackIndex) return;
+        renderLyrics(text);
+      })
+      .catch(function () {
+        if (token !== currentTrackIndex) return;
+        setLyricsPlaceholder("暂无歌词");
+      });
+  }
+
+  function bindPlayerEvents() {
+    if (!player) return;
+    player.on("listswitch", function (event) {
+      var index = typeof event === "number" ? event : (event && event.index);
+      if (typeof index === "number") loadTrackLyrics(index);
+    });
+    player.on("play", function () {
+      updateLyricTime();
+    });
+    player.on("timeupdate", function () {
+      updateLyricTime();
+    });
+  }
+
   function renderPlayer(tracks) {
     if (!window.APlayer) {
       showError();
       return;
     }
     clearPlayer();
+    currentTracks = tracks;
     var box = document.createElement("div");
+    var lyrics = document.createElement("div");
+    lyrics.className = "netease-lyrics";
+    var inner = document.createElement("div");
+    inner.className = "netease-lyrics-inner";
+    lyrics.appendChild(inner);
+    lyricsRoot = lyrics;
+    lyricsBox = inner;
+    document.body.appendChild(lyricsRoot);
     stage.appendChild(box);
     try {
       player = new APlayer({
@@ -159,8 +346,10 @@
         listFolded: false,
         listMaxHeight: "220px",
         storageName: "zenith-netease-player",
-        lrcType: 3
+        lrcType: 0
       });
+      bindPlayerEvents();
+      loadTrackLyrics(0);
     } catch (error) {
       showError();
     }

@@ -1145,11 +1145,133 @@ body.timer-type-simple .toggle-row:first-child {
   flex: 1;
 }
 
-.week-heat {
+.calendar-toolbar {
+  display: grid;
+  grid-template-columns: 34px 1fr 34px;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.calendar-title strong {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.calendar-today-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.calendar-head {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  align-content: start;
+  gap: 6px;
+}
+
+.calendar-head span {
+  color: var(--muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+}
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.calendar-day.outside {
+  border-color: transparent;
+  background: transparent;
+  opacity: 0.4;
+}
+
+.calendar-day.today {
+  border-color: rgba(56, 217, 192, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(56, 217, 192, 0.18);
+}
+
+.calendar-day .day-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.calendar-day .day-mins {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.calendar-day.l1 {
+  background: rgba(61, 220, 132, 0.2);
+}
+
+.calendar-day.l2 {
+  background: rgba(61, 220, 132, 0.42);
+}
+
+.calendar-day.l3 {
+  background: rgba(61, 220, 132, 0.68);
+}
+
+.calendar-day.l4 {
+  background: var(--green);
+  border-color: rgba(61, 220, 132, 0.5);
+}
+
+.calendar-day.l4 .day-num,
+.calendar-day.l4 .day-mins {
+  color: #fff;
+}
+
+.heat-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.heat-legend span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.heat-legend .heat-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
 }
 
 .heat-cell {

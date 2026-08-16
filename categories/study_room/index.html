@@ -212,7 +212,7 @@
         <section class="view" data-view="calendar" id="viewCalendar">
           <div class="view-title">
             <h2>学习日历</h2>
-            <span class="count-pill">7 DAYS</span>
+            <span class="count-pill">MONTH</span>
           </div>
           <div class="stats-row">
             <div class="stat-cell"><span>今日</span><strong id="statToday">0m</strong></div>
@@ -221,8 +221,31 @@
             <div class="stat-cell"><span>最长</span><strong id="statLongest">0m</strong></div>
           </div>
           <div class="heat-card">
-            <span class="section-label">最近七天专注热度</span>
-            <div class="week-heat" id="weekHeat" aria-label="最近七天专注时长"></div>
+            <div class="calendar-toolbar">
+              <button class="icon-btn small" id="calendarPrev" type="button" title="上个月" aria-label="上个月">
+                <i data-lucide="chevron-left"></i>
+              </button>
+              <div class="calendar-title">
+                <strong id="calendarTitle">2026年8月</strong>
+                <button class="calendar-today-btn" id="calendarToday" type="button">今天</button>
+              </div>
+              <button class="icon-btn small" id="calendarNext" type="button" title="下个月" aria-label="下个月">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+            <div class="calendar-head" aria-hidden="true">
+              <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+            </div>
+            <div class="calendar-grid" id="calendarGrid" aria-label="学习专注热力日历"></div>
+            <div class="heat-legend" aria-label="专注时长图例">
+              <span>少</span>
+              <i class="heat-cell"></i>
+              <i class="heat-cell l1"></i>
+              <i class="heat-cell l2"></i>
+              <i class="heat-cell l3"></i>
+              <i class="heat-cell l4"></i>
+              <span>多</span>
+            </div>
           </div>
         </section>
 

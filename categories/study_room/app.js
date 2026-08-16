@@ -70,6 +70,8 @@
   }
 
   var state = loadState();
+  var calendarYear = 0;
+  var calendarMonth = 0;
   var timer = {
     running: false,
     mode: state.settings.timerType === "timer" ? "timer" : "focus",
@@ -439,24 +441,72 @@
     $("statTotal").textContent = fmtHours(state.stats.totalSeconds);
     $("statSessions").textContent = state.stats.sessions;
     $("statLongest").textContent = fmtShort(state.stats.longestSeconds);
-    renderWeekHeat();
+    renderCalendar();
   }
 
-  function renderWeekHeat() {
-    var labels = ["一", "二", "三", "四", "五", "六", "日"];
+  function heatLevel(sec) {
+    return sec >= 3600 ? "l4" : sec >= 1800 ? "l3" : sec >= 900 ? "l2" : sec > 0 ? "l1" : "";
+  }
+
+  function isSameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  function renderCalendar() {
+    var now = new Date();
+    if (!calendarYear) {
+      calendarYear = now.getFullYear();
+      calendarMonth = now.getMonth();
+    }
+    $("calendarTitle").textContent = calendarYear + "年" + (calendarMonth + 1) + "月";
+    var first = new Date(calendarYear, calendarMonth, 1);
+    var startDay = (first.getDay() + 6) % 7;
+    var daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    var prevDays = new Date(calendarYear, calendarMonth, 0).getDate();
     var cells = [];
-    for (var i = 6; i >= 0; i--) {
-      var date = new Date();
-      date.setHours(0, 0, 0, 0);
-      date.setDate(date.getDate() - i);
+    for (var i = 0; i < 42; i += 1) {
+      var day = i - startDay + 1;
+      var date;
+      var outside = false;
+      if (day < 1) {
+        date = new Date(calendarYear, calendarMonth - 1, prevDays + day);
+        outside = true;
+      } else if (day > daysInMonth) {
+        date = new Date(calendarYear, calendarMonth + 1, day - daysInMonth);
+        outside = true;
+      } else {
+        date = new Date(calendarYear, calendarMonth, day);
+      }
       var key = todayKey(date);
       var sec = state.stats.history[key] || 0;
-      var level = sec >= 3600 ? "l4" : sec >= 1800 ? "l3" : sec >= 900 ? "l2" : sec > 0 ? "l1" : "";
+      var level = heatLevel(sec);
+      var classes = ["calendar-day"];
+      if (outside) classes.push("outside");
+      if (isSameDay(date, now)) classes.push("today");
+      if (level) classes.push(level);
+      var dateLabel = date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日";
       cells.push(
-        '<div class="heat-cell ' + level + '" title="' + labels[(date.getDay() + 6) % 7] + " " + fmtShort(sec) + '"></div>'
+        '<div class="' + classes.join(" ") + '" title="' + dateLabel + " " + fmtShort(sec) + '">' +
+          '<span class="day-num">' + date.getDate() + "</span>" +
+          (sec > 0 ? '<span class="day-mins">' + fmtShort(sec) + "</span>" : "") +
+        "</div>"
       );
     }
-    $("weekHeat").innerHTML = cells.join("");
+    $("calendarGrid").innerHTML = cells.join("");
+  }
+
+  function shiftCalendarMonth(delta) {
+    var date = new Date(calendarYear, calendarMonth + delta, 1);
+    calendarYear = date.getFullYear();
+    calendarMonth = date.getMonth();
+    renderCalendar();
+  }
+
+  function goCalendarToday() {
+    var now = new Date();
+    calendarYear = now.getFullYear();
+    calendarMonth = now.getMonth();
+    renderCalendar();
   }
 
   function renderHint() {
@@ -872,6 +922,10 @@
       if (master && audioCtx) master.gain.setValueAtTime(value / 100, audioCtx.currentTime);
       save();
     });
+
+    if ($("calendarPrev")) $("calendarPrev").addEventListener("click", function () { shiftCalendarMonth(-1); });
+    if ($("calendarNext")) $("calendarNext").addEventListener("click", function () { shiftCalendarMonth(1); });
+    if ($("calendarToday")) $("calendarToday").addEventListener("click", goCalendarToday);
 
     $("openNeteaseBtn").addEventListener("click", openNeteasePlayer);
 
