@@ -239,6 +239,8 @@
       lyricsBox.appendChild(line);
       lyricEls.push(line);
     });
+    currentLyricIndex = -1;
+    lyricsBox.scrollTop = 0;
     updateLyricTime();
   }
 
@@ -256,9 +258,12 @@
       el.classList.toggle("active", i === index);
     });
     var activeEl = lyricEls[index];
-    if (activeEl) {
-      var target = activeEl.offsetTop - lyricsBox.clientHeight / 2 + activeEl.offsetHeight / 2;
-      lyricsBox.scrollTop = Math.max(0, target);
+    if (activeEl && lyricsBox.scrollTo) {
+      var target = activeEl.offsetTop - 6;
+      lyricsBox.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
+    } else if (activeEl) {
+      var fallbackTop = activeEl.offsetTop - 6;
+      lyricsBox.scrollTop = Math.max(0, fallbackTop);
     }
   }
 

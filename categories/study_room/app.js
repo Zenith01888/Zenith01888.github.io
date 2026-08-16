@@ -28,6 +28,15 @@
     timer: "计时器",
   };
 
+  var WALLPAPERS = [
+    "p1.webp",
+    "p2.webp",
+    "p3.webp",
+    "p4.webp",
+    "p5.webp",
+    "p6.webp"
+  ];
+
   var DEFAULTS = {
     settings: {
       focusMin: 25,
@@ -39,6 +48,7 @@
       strictMode: false,
       showTips: true,
       neteaseId: "12275290957",
+      wallpaper: 0,
       volume: 55,
       sound: "none",
     },
@@ -164,8 +174,19 @@
   }
 
   function applyScene() {
+    var index = state.settings.wallpaper || 0;
+    var name = WALLPAPERS[index % WALLPAPERS.length];
     var bg = $("roomBg");
-    if (bg) bg.style.backgroundImage = 'url("assets/p1.webp")';
+    if (bg) bg.style.backgroundImage = 'url("assets/' + name + '")';
+    document.documentElement.setAttribute("data-scene", "p" + ((index % WALLPAPERS.length) + 1));
+  }
+
+  function switchWallpaper() {
+    var next = ((state.settings.wallpaper || 0) + 1) % WALLPAPERS.length;
+    state.settings.wallpaper = next;
+    save();
+    applyScene();
+    showToast("壁纸 " + (next + 1) + " / " + WALLPAPERS.length, 1200);
   }
 
   function modeSeconds(mode) {
@@ -750,6 +771,7 @@
   }
 
   function refreshAll() {
+    applyScene();
     document.body.classList.toggle("timer-type-simple", state.settings.timerType === "timer");
     $("setFocus").value = state.settings.focusMin;
     $("setBreak").value = state.settings.breakMin;
@@ -943,7 +965,7 @@
       toggleConsole();
     });
 
-    $("toggleConsoleBtn").addEventListener("click", toggleConsole);
+    $("wallpaperBtn").addEventListener("click", switchWallpaper);
 
     $("fullscreenBtn").addEventListener("click", toggleFullscreen);
     ["mousemove", "pointerdown", "keydown", "touchstart"].forEach(function (type) {
