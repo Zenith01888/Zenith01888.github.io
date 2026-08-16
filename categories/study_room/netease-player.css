@@ -332,3 +332,24 @@ body.netease-panel-open .netease-panel {
     border-radius: 14px;
   }
 }
+
+.netease-fallback {
+  display: grid;
+  gap: 8px;
+}
+
+.netease-fallback p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.netease-outchain {
+  display: block;
+  width: 100%;
+  height: 430px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}

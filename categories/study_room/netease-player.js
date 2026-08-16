@@ -5,6 +5,15 @@
   // 例如歌单链接 https://music.163.com/#/playlist?id=12275290957 中的 12275290957。
   var DEFAULT_PLAYLIST_ID = "12275290957";
 
+  // 多个公共解析接口会按顺序自动尝试，一个失效就换下一个。
+  var METING_APIS = [
+    "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r",
+    "https://meting-ve.2333332.xyz/api?server=:server&type=:type&id=:id&r=:r",
+    "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&r=:r"
+  ];
+  var API_TIMEOUT = 12000;
+  var PLAYER_READY_TIMEOUT = 20000;
+
   var STORAGE_KEY = "zenith-study-room-v2";
   var PANEL_OPEN_CLASS = "netease-panel-open";
 
@@ -12,8 +21,9 @@
   var panel = null;
   var stage = null;
   var closeBtn = null;
-  var metingNode = null;
-  var loadTimer = null;
+  var player = null;
+  var pendingLoad = 0;
+  var readyTimer = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -45,7 +55,7 @@
   }
 
   function isReady() {
-    return !!(window.APlayer && (window.MetingJSElement || (window.customElements && window.customElements.get("meting-js"))));
+    return !!window.APlayer;
   }
 
   function ensureAPlayerStyles() {
@@ -55,6 +65,27 @@
     link.href = "https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css";
     link.setAttribute("data-aplayer-css", "1");
     document.head.appendChild(link);
+  }
+
+  function clearReadyTimer() {
+    if (readyTimer) {
+      clearInterval(readyTimer);
+      readyTimer = null;
+    }
+  }
+
+  function clearPlayer() {
+    pendingLoad += 1;
+    clearReadyTimer();
+    if (player) {
+      try {
+        player.destroy();
+      } catch (error) {
+        // The player may already be destroyed.
+      }
+      player = null;
+    }
+    if (stage) stage.textContent = "";
   }
 
   function showLoading() {
@@ -71,82 +102,135 @@
   }
 
   function showError() {
-    if (metingNode) {
-      try {
-        metingNode.remove();
-      } catch (error) {
-        // The element may already be detached.
-      }
-      metingNode = null;
-    }
-    stage.textContent = "";
+    clearPlayer();
     var error = document.createElement("div");
     error.className = "netease-error";
     error.textContent = "歌单加载失败，请检查歌单 ID 或网络";
     stage.appendChild(error);
   }
 
-  function clearLoadTimer() {
-    if (loadTimer) {
-      clearTimeout(loadTimer);
-      loadTimer = null;
+  function buildApiUrl(template, playlistId) {
+    return template
+      .replace(":server", "netease")
+      .replace(":type", "playlist")
+      .replace(":id", encodeURIComponent(playlistId))
+      .replace(":auth", "")
+      .replace(":r", Math.random());
+  }
+
+  function fetchPlaylist(api, playlistId) {
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
+      controller.abort();
+    }, API_TIMEOUT);
+    return fetch(buildApiUrl(api, playlistId), { signal: controller.signal })
+      .then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        clearTimeout(timer);
+        if (!Array.isArray(data) || !data.length) throw new Error("empty playlist");
+        return data;
+      })
+      .catch(function (error) {
+        clearTimeout(timer);
+        throw error;
+      });
+  }
+
+  function renderPlayer(tracks) {
+    if (!window.APlayer) {
+      showError();
+      return;
+    }
+    clearPlayer();
+    var box = document.createElement("div");
+    stage.appendChild(box);
+    try {
+      player = new APlayer({
+        container: box,
+        audio: tracks,
+        autoplay: true,
+        preload: "auto",
+        theme: "#38d9c0",
+        mutex: true,
+        order: "list",
+        listFolded: false,
+        listMaxHeight: "220px",
+        storageName: "zenith-netease-player",
+        lrcType: 3
+      });
+    } catch (error) {
+      showError();
     }
   }
 
-  function watchPlayerLoad() {
-    clearLoadTimer();
-    var observer = new MutationObserver(function () {
-      if (stage.querySelector(".aplayer")) {
-        observer.disconnect();
-        clearLoadTimer();
-        var loading = stage.querySelector(".netease-loading");
-        if (loading) loading.remove();
+  function showFallbackPlayer(playlistId) {
+    clearPlayer();
+    var fallback = document.createElement("div");
+    fallback.className = "netease-fallback";
+    var note = document.createElement("p");
+    note.textContent = "歌单解析服务暂不可用，已切换为网易云官方播放器";
+    var frame = document.createElement("iframe");
+    frame.className = "netease-outchain";
+    frame.src = "https://music.163.com/outchain/player?type=2&id=" + encodeURIComponent(playlistId) + "&auto=1&height=430";
+    frame.title = "网易云音乐歌单播放器";
+    frame.setAttribute("loading", "lazy");
+    frame.setAttribute("allow", "autoplay; fullscreen");
+    fallback.appendChild(note);
+    fallback.appendChild(frame);
+    stage.appendChild(fallback);
+  }
+
+  function loadFromApis(playlistId, index, token) {
+    if (token !== pendingLoad || !stage) return;
+    if (index >= METING_APIS.length) {
+      showFallbackPlayer(playlistId);
+      return;
+    }
+    fetchPlaylist(METING_APIS[index], playlistId)
+      .then(function (tracks) {
+        if (token !== pendingLoad) return;
+        renderPlayer(tracks);
+      })
+      .catch(function () {
+        if (token !== pendingLoad) return;
+        loadFromApis(playlistId, index + 1, token);
+      });
+  }
+
+  function waitForPlayer(playlistId, callback) {
+    if (isReady()) {
+      callback();
+      return;
+    }
+    clearReadyTimer();
+    var waited = 0;
+    readyTimer = setInterval(function () {
+      waited += 200;
+      if (isReady()) {
+        clearReadyTimer();
+        callback();
+      } else if (waited >= PLAYER_READY_TIMEOUT) {
+        clearReadyTimer();
+        showFallbackPlayer(playlistId);
       }
-    });
-    observer.observe(stage, { childList: true, subtree: true });
-    loadTimer = setTimeout(function () {
-      observer.disconnect();
-      if (!stage.querySelector(".aplayer") && stage.querySelector("meting-js")) {
-        showError();
-      }
-    }, 15000);
+    }, 200);
   }
 
   function load(id) {
     if (!stage) return;
     ensureAPlayerStyles();
-    if (!isReady()) {
-      showError();
-      return;
-    }
+    clearPlayer();
     var playlistId = normalizePlaylistId(id, readSavedPlaylistId());
     window.studyRoomNeteaseId = playlistId;
-    clearLoadTimer();
-    if (metingNode) {
-      try {
-        metingNode.remove();
-      } catch (error) {
-        // The element may already be detached.
-      }
-      metingNode = null;
-    }
     showLoading();
-
-    // MetingJS 负责解析歌单，APlayer 负责渲染播放器。
-    metingNode = document.createElement("meting-js");
-    metingNode.setAttribute("server", "netease");
-    metingNode.setAttribute("type", "playlist");
-    metingNode.setAttribute("id", playlistId);
-    metingNode.setAttribute("autoplay", "true");
-    metingNode.setAttribute("preload", "auto");
-    metingNode.setAttribute("theme", "#38d9c0");
-    metingNode.setAttribute("mutex", "true");
-    metingNode.setAttribute("order", "list");
-    metingNode.setAttribute("list-folded", "false");
-    metingNode.setAttribute("list-max-height", "220px");
-    metingNode.setAttribute("storage-name", "zenith-netease-player");
-    stage.appendChild(metingNode);
-    watchPlayerLoad();
+    var token = pendingLoad;
+    waitForPlayer(playlistId, function () {
+      if (token !== pendingLoad) return;
+      loadFromApis(playlistId, 0, token);
+    });
   }
 
   function isOpen() {
@@ -162,7 +246,7 @@
       button.setAttribute("aria-expanded", "true");
       button.classList.add("active");
     }
-    if (!stage.querySelector(".aplayer") && !stage.querySelector("meting-js")) {
+    if (!stage.querySelector(".aplayer") && !stage.querySelector(".netease-fallback") && !stage.querySelector(".netease-loading")) {
       load(readSavedPlaylistId());
     }
   }
@@ -184,16 +268,7 @@
   }
 
   function stop() {
-    clearLoadTimer();
-    if (metingNode) {
-      try {
-        metingNode.remove();
-      } catch (error) {
-        // The element may already be detached.
-      }
-      metingNode = null;
-    }
-    if (stage) stage.textContent = "";
+    clearPlayer();
     close();
   }
 
@@ -216,8 +291,7 @@
     if (closeBtn) closeBtn.addEventListener("click", close);
     document.addEventListener("keydown", handleKeydown);
 
-    // 公共 Meting API 偶发不稳定，可换成你自建的 Meting API 地址。
-    window.meting_api = "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&r=:r";
+    window.meting_api = METING_APIS[0];
   }
 
   init();
