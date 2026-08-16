@@ -288,7 +288,7 @@
   const searchResults = document.getElementById("localSearchResults");
   const searchEmpty = document.getElementById("localSearchEmpty");
   const searchClose = document.getElementById("searchClose");
-  const pageSize = 5;
+  const pageSize = 6;
   let currentPage = 1;
 
   const getStored = (key) => {
