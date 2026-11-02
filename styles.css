@@ -615,8 +615,8 @@ body.bw-mode #rightside {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 140px 20px 64px;
-  text-align: left;
+  padding: 140px 20px 118px;
+  text-align: center;
 }
 
 .site-title {
@@ -636,18 +636,19 @@ body.bw-mode #rightside {
 
 .scroll-down {
   position: absolute;
-  right: max(20px, calc((100% - 1200px) / 2 + 20px));
-  bottom: 52px;
+  left: 50%;
+  bottom: 64px;
+  transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--hero-ink-soft);
+  color: var(--hero-ink);
   transition: color 300ms ease;
   animation: float 2s ease-in-out infinite;
 }
 
 .scroll-down:hover {
-  color: var(--hero-ink);
+  color: var(--theme-hover);
 }
 
 .scroll-down:focus-visible {
@@ -665,10 +666,10 @@ body.bw-mode #rightside {
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translate(-50%, 0);
   }
   50% {
-    transform: translateY(8px);
+    transform: translate(-50%, 8px);
   }
 }
 
@@ -1451,8 +1452,7 @@ body.bw-mode #rightside {
   }
 
   .scroll-down {
-    right: 16px;
-    bottom: 22px;
+    bottom: 16px;
   }
 
   .nav-toggle {
