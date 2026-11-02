@@ -11,9 +11,9 @@
   <meta property="og:type" content="website">
   <title>Zenith's Learning Site</title>
   <link rel="icon" href="img/favicon.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
   <script defer src="img/vendor/lucide/lucide.min.js"></script>
-  <script defer src="script.js?v=2"></script>
+  <script defer src="script.js?v=3"></script>
   <script defer src="img/vendor/click-fireworks.js"></script>
   <script>
     (function () {
@@ -31,10 +31,19 @@
     })();
   </script>
   <noscript>
-    <style>.reveal { opacity: 1; transform: none; }</style>
+    <style>.reveal { opacity: 1; transform: none; } .site-loader { display: none; }</style>
   </noscript>
 </head>
 <body>
+  <div class="site-loader" id="siteLoader" aria-hidden="true">
+    <div class="site-loader__inner">
+      <p class="site-loader__wordmark">Zenith01888<span class="site-loader__dot">.</span></p>
+      <div class="site-loader__bar">
+        <span class="site-loader__bar-fill" id="siteLoaderBar"></span>
+      </div>
+    </div>
+  </div>
+
   <a class="skip-link" href="#main" data-i18n="skip">跳到主要内容</a>
 
   <header class="page-header" id="top">

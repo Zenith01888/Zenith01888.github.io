@@ -5,6 +5,62 @@
   const THEME_KEY = "zenith-theme";
   const BW_KEY = "zenith-bw";
 
+  const LOADER_MIN_MS = 650;
+  const LOADER_MAX_MS = 6000;
+
+  const initSiteLoader = () => {
+    const loader = document.getElementById("siteLoader");
+    if (!loader) return;
+
+    const fill = document.getElementById("siteLoaderBar");
+    const root = document.documentElement;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const startedAt = performance.now();
+    let progress = 6;
+    let finished = false;
+
+    const paint = (value) => {
+      progress = Math.min(100, Math.max(progress, value));
+      if (fill) fill.style.width = `${progress}%`;
+    };
+
+    root.classList.add("site-loading");
+    paint(progress);
+
+    const trickle = window.setInterval(() => {
+      const step = progress < 45 ? 10 : progress < 72 ? 5 : progress < 92 ? 2 : 0;
+      if (step > 0) paint(progress + step);
+    }, 110);
+
+    const guard = window.setTimeout(() => finish(), LOADER_MAX_MS);
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+
+      window.clearInterval(trickle);
+      window.clearTimeout(guard);
+      paint(100);
+
+      const waited = performance.now() - startedAt;
+      const delay = reducedMotion ? 0 : Math.max(0, LOADER_MIN_MS - waited);
+
+      window.setTimeout(() => {
+        root.classList.remove("site-loading");
+        loader.classList.add("is-done");
+        window.setTimeout(() => loader.remove(), 900);
+      }, delay);
+    }
+
+    if (document.readyState === "complete") {
+      finish();
+    } else {
+      window.addEventListener("load", finish, { once: true });
+    }
+  };
+
+  initSiteLoader();
+
   const I18N = {
     zh: {
       "title": "Zenith01888 的个人主页",
