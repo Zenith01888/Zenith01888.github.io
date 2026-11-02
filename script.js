@@ -3,7 +3,6 @@
 
   const LANG_KEY = "zenith-lang";
   const THEME_KEY = "zenith-theme";
-  const BW_KEY = "zenith-bw";
 
   const LOADER_MIN_MS = 650;
   const LOADER_MAX_MS = 6000;
@@ -81,11 +80,17 @@
       "lang.aria": "切换到英文",
       "theme.dark": "切换到深色模式",
       "theme.light": "切换到浅色模式",
-      "bw.aria": "切换黑白显示",
       "hero.subtitle": "记录项目、学习与正在做的事",
       "hero.scroll": "向下滚动",
       "recent.aria": "最近项目",
       "tags.aria": "项目标签",
+      "tag.pomodoro": "番茄钟",
+      "tag.tasks": "待办",
+      "tag.radio": "音乐电台",
+      "tag.focus": "专注",
+      "tag.ideas": "创意",
+      "tag.prototype": "原型",
+      "tag.opensource": "开源",
       "recent.title": "最近项目",
       "recent.viewAll": "查看全部",
       "pagination.aria": "项目分页",
@@ -209,11 +214,17 @@
       "lang.aria": "Switch to Chinese",
       "theme.dark": "Switch to dark mode",
       "theme.light": "Switch to light mode",
-      "bw.aria": "Toggle black & white display",
       "hero.subtitle": "Projects, learning notes, and things in progress",
       "hero.scroll": "Scroll down",
       "recent.aria": "Recent projects",
       "tags.aria": "Project tags",
+      "tag.pomodoro": "Pomodoro",
+      "tag.tasks": "Tasks",
+      "tag.radio": "Music radio",
+      "tag.focus": "Focus",
+      "tag.ideas": "Ideas",
+      "tag.prototype": "Prototype",
+      "tag.opensource": "Open Source",
       "recent.title": "Recent Projects",
       "recent.viewAll": "View all",
       "pagination.aria": "Project pagination",
@@ -328,7 +339,6 @@
   const year = document.getElementById("year");
   const langToggle = document.getElementById("langToggle");
   const themeToggle = document.getElementById("themeToggle");
-  const bwToggle = document.getElementById("bwToggle");
   const themeColor = document.getElementById("themeColor");
   const pagination = document.getElementById("pagination");
   const rightside = document.getElementById("rightside");
@@ -385,13 +395,6 @@
       themeToggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
     }
 
-    if (bwToggle) {
-      const on = document.body.classList.contains("bw-mode");
-      bwToggle.setAttribute("aria-label", dict["bw.aria"]);
-      bwToggle.setAttribute("title", dict["bw.aria"]);
-      bwToggle.setAttribute("aria-pressed", on ? "true" : "false");
-    }
-
     if (langToggle) {
       langToggle.setAttribute("aria-label", dict["lang.aria"]);
       langToggle.setAttribute("title", dict["lang.aria"]);
@@ -445,12 +448,6 @@
     document.documentElement.dataset.theme = theme;
     if (persist) setStored(THEME_KEY, theme);
     if (themeColor) themeColor.setAttribute("content", theme === "dark" ? "#10151c" : "#ffffff");
-    updateWidgetLabels();
-  };
-
-  const applyBw = (on, persist = true) => {
-    document.body.classList.toggle("bw-mode", on);
-    if (persist) setStored(BW_KEY, on ? "on" : "off");
     updateWidgetLabels();
   };
 
@@ -582,7 +579,6 @@
   }
   applyTheme(initialTheme, false);
   applyLanguage(currentLang, false);
-  applyBw(getStored(BW_KEY) === "on", false);
 
   const onScroll = () => {
     nav.classList.toggle("scrolled", window.scrollY > 40);
@@ -673,12 +669,6 @@
     themeToggle.addEventListener("click", () => {
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       applyTheme(next);
-    });
-  }
-
-  if (bwToggle) {
-    bwToggle.addEventListener("click", () => {
-      applyBw(!document.body.classList.contains("bw-mode"));
     });
   }
 

@@ -11,9 +11,9 @@
   <meta property="og:type" content="website">
   <title>Zenith's Learning Site</title>
   <link rel="icon" href="img/favicon.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
   <script defer src="img/vendor/lucide/lucide.min.js"></script>
-  <script defer src="script.js?v=3"></script>
+  <script defer src="script.js?v=4"></script>
   <script defer src="img/vendor/click-fireworks.js"></script>
   <script>
     (function () {
@@ -181,9 +181,9 @@
             </div>
             <p class="content" data-i18n="project.studyroom.desc">沉浸式在线自习室，支持番茄钟、待办、学习统计、一言 Tips、音乐电台与歌词、网易云音乐氛围音与全屏模式，数据保存在本地浏览器。</p>
             <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
-              <a href="categories/study_room/">番茄钟</a>
-              <a href="categories/study_room/">待办</a>
-              <a href="categories/study_room/">音乐电台</a>
+              <a href="categories/study_room/" data-i18n="tag.pomodoro">番茄钟</a>
+              <a href="categories/study_room/" data-i18n="tag.tasks">待办</a>
+              <a href="categories/study_room/" data-i18n="tag.radio">音乐电台</a>
             </div>
             <a class="read-more read-more--primary" href="categories/study_room/">
               <span data-i18n="project.use">在线使用</span>
@@ -262,9 +262,9 @@
             </div>
             <p class="content" data-i18n="project.lab.desc">持续把日常问题做成小而可靠的工具，记录灵感、实验和可以复用的代码片段。</p>
             <div class="tags" aria-label="项目标签" data-i18n-attr="aria-label:tags.aria">
-              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">Ideas</a>
-              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">Prototype</a>
-              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">Open Source</a>
+              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n="tag.ideas">Ideas</a>
+              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n="tag.prototype">Prototype</a>
+              <a href="https://github.com/Zenith01888" target="_blank" rel="noreferrer" data-i18n="tag.opensource">Open Source</a>
             </div>
             <a class="read-more" href="https://github.com/Zenith01888" target="_blank" rel="noreferrer">
               <span data-i18n="project.follow">关注动态</span>
@@ -398,8 +398,8 @@
             </div>
             <div class="tag-cloud">
               <a href="#skills">Web</a>
-              <a href="#skills">番茄钟</a>
-              <a href="#skills">专注</a>
+              <a href="#skills" data-i18n="tag.pomodoro">番茄钟</a>
+              <a href="#skills" data-i18n="tag.focus">专注</a>
               <a href="#skills">TypeScript</a>
               <a href="#skills">Python</a>
               <a href="#skills">Automation</a>
@@ -408,8 +408,8 @@
               <a href="#skills">GitHub Actions</a>
               <a href="#skills">GitHub Pages</a>
               <a href="#skills">UI Design</a>
-              <a href="#skills">Prototype</a>
-              <a href="#skills">Open Source</a>
+              <a href="#skills" data-i18n="tag.prototype">Prototype</a>
+              <a href="#skills" data-i18n="tag.opensource">Open Source</a>
             </div>
           </div>
 
@@ -494,9 +494,6 @@
       <button class="rightside-widget" id="themeToggle" type="button" aria-pressed="false" data-i18n-attr="aria-label:theme.dark title:theme.dark">
         <i data-lucide="moon" class="theme-icon theme-icon--dark"></i>
         <i data-lucide="sun" class="theme-icon theme-icon--light"></i>
-      </button>
-      <button class="rightside-widget" id="bwToggle" type="button" aria-pressed="false" data-i18n-attr="aria-label:bw.aria title:bw.aria">
-        <i data-lucide="contrast"></i>
       </button>
     </div>
     <div id="rightside-config-show">

@@ -603,14 +603,6 @@ html[data-theme="dark"] .theme-icon--light {
   display: inline-block;
 }
 
-body.bw-mode .page-header,
-body.bw-mode main,
-body.bw-mode .site-footer,
-body.bw-mode .site-nav,
-body.bw-mode #rightside {
-  filter: grayscale(1);
-}
-
 .site-info {
   width: 100%;
   max-width: 1200px;

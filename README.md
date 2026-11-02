@@ -2,7 +2,7 @@
 
 一个零依赖、可直接部署到 GitHub Pages 的静态个人主页。使用原生 HTML、CSS 和 JavaScript 构建，本地包含 Lucide 图标与程序化生成的页面素材。云上自习室部署在 `categories/study_room/`，PDF 合并工具部署在 `categories/pdf-merge/`，PWM 监控工具部署在 `categories/pwm_monitor/`，示波器上位机浏览器演示部署在 `categories/app_Oscilloscope/web/`，都可以从主页“工具”下拉菜单或项目卡片打开。
 
-页面右下角提供三个部件：`中 / EN` 切换中英文、`月亮 / 太阳` 切换深色与浅色模式、`黑白` 按钮切换灰度显示。偏好会保存在 `localStorage` 中；右下角同时提供回到顶部按钮。
+页面右下角提供两个部件：`中 / EN` 切换中英文、`月亮 / 太阳` 切换深色与浅色模式。偏好会保存在 `localStorage` 中；右下角同时提供回到顶部按钮。
 
 ## 本地预览
 
